@@ -12,5 +12,5 @@ Home                |  Skills                | Contact
 
 The client graphical interface has been developped using the flutter framework, the website has been hosted with firebase and the entire project is under docker and has a pipeline CD (continuous develoment) in order to host website every update when the code is push on github.
 
-<img src="https://skillicons.dev/icons?i=flutter,htlm,dart,firebase,docker,docker"/>
+<img src="https://skillicons.dev/icons?i=flutter,html,dart,firebase,docker,git"/>
 
