@@ -1,0 +1,35 @@
+{
+    "name": "Antoine Gonthier",
+    "short_name": "portolio",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Developer's portolio.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/ppp.jpeg",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/ppp.jpeg",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/ppp.jpeg",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/ppp.jpeg",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
