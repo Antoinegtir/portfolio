@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 50),
                           child: Text(
-                            "\n - 3 year of autodidact learn of mobile development\n - 1 year at programming college at Epitech Nantes, title aimed: BAC +5, Expert in Technology & Information",
+                            "\n - 3 years of autodidact learn of mobile development\n - 1 year at programming college at Epitech Nantes, title aimed: BAC +5, Expert in Technology & Information",
                             style: TextStyle(
                               overflow: TextOverflow.visible,
                               fontSize: 25,
