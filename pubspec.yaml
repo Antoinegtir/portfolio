@@ -1,0 +1,30 @@
+name: portolio
+description: portfolio project
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.18.6 <3.0.0"
+
+dependencies:
+  animate_do: ^3.0.2
+  awesome_icons: ^1.1.0
+  carousel_slider: ^4.2.1
+  cupertino_icons: ^1.0.2
+  flutter:
+    sdk: flutter
+  lottie: ^2.3.2
+  url_launcher: ^6.1.11
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/image/
