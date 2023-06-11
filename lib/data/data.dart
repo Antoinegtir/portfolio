@@ -16,6 +16,14 @@ List<Map<String, dynamic>> project = [
     "link": "https://github.com/Antoinegtir/oros"
   },
   {
+    "title": "ReBeal.",
+    "description": "Fully functionnal clone of BeReal.",
+    "url":
+        "https://github.com/Antoinegtir/bereal-clone/raw/main/assets/rebeals.png?raw=true",
+    "technos": "flutter,dart,firebase,docker,kubernetes",
+    "link": "https://github.com/Antoinegtir/bereal-clone"
+  },
+  {
     "title": "Connectify",
     "description": "You're mouse everywhere",
     "url":
