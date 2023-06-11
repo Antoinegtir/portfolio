@@ -1,7 +1,9 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:awesome_icons/awesome_icons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:portolio/ui/project.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/data.dart';
@@ -109,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 50),
                               child: Text(
-                                "Hey there, welcome to my portfolio, my name is Antoine Gonthier, 18 years old, Epitech Student & Full-stack Flutter developer. I am passionate about developping cool graphical interface on application that i develop. I love developping server in order to create link between people innovate & learn new technologies.",
+                                "Hey there, welcome to my portfolio, my name is Antoine Gonthier, 18 years old, Epitech Student & Full-stack Flutter developer. I am passionate about developping cool graphical interface on application that i develop. I love developping server in order to create link between people innovate, learn new technologies.",
                                 style: TextStyle(
                                   overflow: TextOverflow.visible,
                                   fontSize: 25,
@@ -184,13 +186,19 @@ class _MyHomePageState extends State<MyHomePage> {
                               fontWeight: FontWeight.w300),
                         ),
                       ]),
-                  Image.network(
-                      "https://skillicons.dev/icons?i=flutter,mongodb,express,firebase,nodejs,js,dart,mysql,ruby,docker"),
-                  Container(
-                    height: 10,
+                  Column(
+                    children: [
+                      CachedNetworkImage(
+                          imageUrl:
+                              "https://skillicons.dev/icons?i=flutter,mongodb,express,firebase,nodejs,js,dart,mysql,ruby,docker"),
+                      Container(
+                        height: 10,
+                      ),
+                      CachedNetworkImage(
+                          imageUrl:
+                              "https://skillicons.dev/icons?i=html,css,swift,dart,graphql,git,github,supabase,kotlin,perl"),
+                    ],
                   ),
-                  Image.network(
-                      "https://skillicons.dev/icons?i=html,css,swift,dart,graphql,git,github,supabase,kotlin,perl"),
                   Container(
                     height: 50,
                   ),
@@ -224,6 +232,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             return GestureDetector(
                                 onTap: () {
                                   launchUrl(Uri.parse(pro["link"]));
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: ((context) => ProjectPage(
+                                  //               data: pro,
+                                  //             ))));
                                 },
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
@@ -239,16 +253,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                             Container(
                                               height: 10,
                                             ),
-                                            ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                child: SizedBox(
-                                                    height: 80,
-                                                    width: 80,
-                                                    child: Image.network(
-                                                      pro["url"],
-                                                      fit: BoxFit.cover,
-                                                    ))),
+                                            Hero(
+                                                tag: "logo",
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    child: SizedBox(
+                                                        height: 80,
+                                                        width: 80,
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: pro["url"],
+                                                          fit: BoxFit.cover,
+                                                        )))),
                                             Container(
                                               height: 10,
                                             ),
@@ -264,6 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   fontWeight: FontWeight.w500,
                                                   fontSize: 15,
                                                   color: Colors.black),
+                                              textAlign: TextAlign.center,
                                             ),
                                             Container(
                                               height: 10,
@@ -276,8 +295,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         .length
                                                         .toDouble() *
                                                     25,
-                                                child: Image.network(
-                                                  "https://skillicons.dev/icons?i=${pro["technos"]}",
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      "https://skillicons.dev/icons?i=${pro["technos"]}",
                                                   fit: BoxFit.contain,
                                                 ))
                                           ],
