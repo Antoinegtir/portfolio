@@ -11,10 +11,12 @@ environment:
 dependencies:
   animate_do: ^3.0.2
   awesome_icons: ^1.1.0
+  cached_network_image: ^3.2.3
   carousel_slider: ^4.2.1
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
+  flutter_svg: ^1.1.6
   lottie: ^2.3.2
   url_launcher: ^6.1.11
 
