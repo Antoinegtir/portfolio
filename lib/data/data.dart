@@ -24,6 +24,14 @@ List<Map<String, dynamic>> project = [
     "link": "https://github.com/Antoinegtir/bereal-clone"
   },
   {
+    "title": "Safari",
+    "description": "Remix of safari with new use case",
+    "url":
+        "https://raw.githubusercontent.com/Antoinegtir/safari-clone/main/assets/safari.png",
+    "technos": "flutter,dart",
+    "link": "https://github.com/Antoinegtir/safari-clone"
+  },
+  {
     "title": "Connectify",
     "description": "You're mouse everywhere",
     "url":
