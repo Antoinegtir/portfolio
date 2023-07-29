@@ -1,8 +1,14 @@
 # This is a generated file; do not edit or check into version control.
-url_launcher=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher-6.1.11/
-url_launcher_android=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_android-6.0.34/
-url_launcher_ios=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_ios-6.1.4/
-url_launcher_linux=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_linux-3.0.5/
-url_launcher_macos=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_macos-3.0.5/
-url_launcher_web=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_web-2.0.17/
-url_launcher_windows=/Users/antoinegonthier/Downloads/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_windows-3.0.6/
+path_provider=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/path_provider-2.0.15/
+path_provider_android=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/path_provider_android-2.0.27/
+path_provider_foundation=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/path_provider_foundation-2.2.3/
+path_provider_linux=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/path_provider_linux-2.1.11/
+path_provider_windows=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/path_provider_windows-2.1.7/
+sqflite=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/sqflite-2.2.8+4/
+url_launcher=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher-6.1.11/
+url_launcher_android=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher_android-6.0.34/
+url_launcher_ios=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher_ios-6.1.4/
+url_launcher_linux=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher_linux-3.0.5/
+url_launcher_macos=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher_macos-3.0.5/
+url_launcher_web=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher_web-2.0.17/
+url_launcher_windows=/Users/antoinegonthier/.pub-cache/hosted/pub.dev/url_launcher_windows-3.0.6/
