@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../widget/copyright.dart';
+
 class BlogPage extends StatefulWidget {
   const BlogPage({super.key});
 
@@ -188,36 +190,7 @@ class _BlogPageState extends State<BlogPage> {
                                 ),
                               ],
                             ))))),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 50,
-                    ),
-                    Container(
-                      height: 5,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.white,
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Text(
-                          'Copyright © 2023 by Antoine Gonthier. All rights reserved.',
-                          style: TextStyle(
-                            fontFamily: 'Arial',
-                            color: Colors.white,
-                            fontSize: MediaQuery.of(context).size.width / 90,
-                          ),
-                        )),
-                    Container(
-                      height: 5,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.white,
-                    ),
-                  ],
-                ))
+             const Copyright()
           ],
         ));
   }
