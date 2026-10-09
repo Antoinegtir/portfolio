@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background: #000;
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-black text-white antialiased;
+  font-family: 'Satoshi', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Two-column shell: 480px content column + sticky phone column (>= lg) */
+.shell {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 0 16px;
+}
+
+.content {
+  width: 480px;
+  max-width: 100%;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+.phone-col {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .phone-col {
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    width: 364px;
+    height: 100vh;
+    flex-shrink: 0;
+    z-index: 20;
+  }
+}
+
+/* Fixed fades at the top and bottom of the viewport, like the reference site */
+.fade-top,
+.fade-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+.fade-top {
+  top: 0;
+  height: 66px;
+  background: linear-gradient(#000 5%, rgba(0, 0, 0, 0) 100%);
+}
+.fade-bottom {
+  bottom: 0;
+  height: 78px;
+  background: linear-gradient(rgba(0, 0, 0, 0) 5%, #000 100%);
+}
