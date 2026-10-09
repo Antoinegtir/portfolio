@@ -6,6 +6,8 @@ export type Badge = {
 export type Experience = {
   id: string
   name: string
+  /** Shorter label for the phone home screen (iOS truncates long names) */
+  shortName?: string
   role: string
   period: string
   icon: string
@@ -14,26 +16,20 @@ export type Experience = {
   images?: string[]
   /** Optional achievement badges shown after the screenshots */
   badges?: Badge[]
+  /** Optional external links shown under the bullets */
+  links?: { label: string; href: string }[]
 }
 
 export const profile = {
   name: 'Antoine Gonthier',
   tagline: 'Mobile Engineer',
-  bio: "Welcome to my site. I'm a 21-yo mobile engineer between Paris and Dublin, with 5+ years of experience building consumer apps. I work with SwiftUI & Java, Node.js and Firebase, and I care a lot about product design.",
+  bio: "Welcome to my site. I'm a 22-yo mobile engineer between Paris and Dublin, with 5+ years of experience building consumer apps. I work with SwiftUI & Java, Node.js and Firebase, and I care a lot about product design.",
   github: 'https://github.com/antoinegtir',
   linkedin: 'https://www.linkedin.com/in/antoinegtr',
   email: 'antoinegonthier11@icloud.com',
 }
 
 export const experiences: Experience[] = [
-  {
-    id: 'calico',
-    name: 'Calico',
-    role: 'Mobile Engineer',
-    period: '2026.03 - Present',
-    icon: '/icons/calico.png',
-    bullets: ['Shipped 3 apps for an American studio.'],
-  },
   {
     id: 'wellnotes',
     name: 'Wellnotes',
@@ -45,7 +41,15 @@ export const experiences: Experience[] = [
       'Ranked on average in the top 100 of the App Store in France.',
       '$30K ARR.',
     ],
-    images: ['/screens/wellnotes-fr-top100.jpg'],
+    images: [
+      '/screens/wellnotes-02-note-editing.jpg',
+      '/screens/wellnotes-03-new-note.jpg',
+      '/screens/wellnotes-04-note-schemes.jpg',
+      '/screens/wellnotes-05-mindmap.jpg',
+      '/screens/wellnotes-06-quiz.jpg',
+      '/screens/wellnotes-07-folder.jpg',
+      '/screens/wellnotes-fr-top100.jpg',
+    ],
     badges: [{ title: 'APP STORE FRANCE', subtitle: 'Top 100 on average' }],
   },
   {
@@ -71,6 +75,13 @@ export const experiences: Experience[] = [
       'Built and maintain the iOS versions.',
     ],
     images: [
+      '/screens/vibes-01-lockscreen.jpg',
+      '/screens/vibes-02-send-vibes.jpg',
+      '/screens/vibes-03-reply.jpg',
+      '/screens/vibes-04-listening.jpg',
+      '/screens/vibes-05-photos.jpg',
+      '/screens/vibes-06-memories.jpg',
+      '/screens/vibes-07-map.jpg',
       '/screens/vibes-jp-store.jpg',
       '/screens/vibes-jp-2.jpg',
       '/screens/vibes-fr-2.jpg',
@@ -83,11 +94,55 @@ export const experiences: Experience[] = [
     ],
   },
   {
+    id: 'threads',
+    name: 'Fhreads',
+    role: 'Open Source',
+    period: '2023.07',
+    icon: '/icons/threads.png',
+    bullets: [
+      'Built a fully functional clone of Threads in Flutter and Firebase, 24 hours after Threads launched.',
+      'The most-starred Flutter Threads clone on GitHub (130+ stars), cloned by tens of thousands of developers.',
+      'Went viral in developer communities: 61K+ reach and 600+ reactions on a single Facebook post.',
+    ],
+    images: [
+      '/screens/threads-feed.jpg',
+      '/screens/threads-threads.jpg',
+      '/screens/threads-profile.jpg',
+      '/screens/threads-facebook.jpg',
+    ],
+    links: [{ label: 'github.com/Antoinegtir/fhreads-meta', href: 'https://github.com/Antoinegtir/fhreads-meta' }],
+  },
+  {
+    id: 'rebeal',
+    name: 'ReBeal',
+    role: 'Open Source',
+    period: '2023.06',
+    icon: '/icons/rebeal.png',
+    bullets: [
+      'Built a fully functional clone of BeReal in Flutter and Firebase in 48 hours.',
+      'The most-starred BeReal clone on GitHub, across all languages (66 stars, 16 forks).',
+    ],
+    images: ['/screens/rebeal-home.jpg', '/screens/rebeal-feed.jpg', '/screens/rebeal-discover.jpg', '/screens/rebeal-profile.jpg'],
+    links: [
+      { label: 'github.com/Antoinegtir/bereal-clone', href: 'https://github.com/Antoinegtir/bereal-clone' },
+      { label: 'Medium article', href: 'https://medium.com/@zkhwctb/how-i-create-a-clone-of-bereal-7dbee8a915d5' },
+    ],
+  },
+  {
     id: 'kams',
     name: 'Kams',
     role: 'Solo Founder',
     period: '2021.12 - 2023',
     icon: '/icons/kams.png',
     bullets: ['Launched my first social network at 16. It did not take off, but I learned a lot.'],
+    images: [
+      '/screens/kams-01.jpg',
+      '/screens/kams-02.jpg',
+      '/screens/kams-03.jpg',
+      '/screens/kams-04.jpg',
+      '/screens/kams-05.jpg',
+      '/screens/kams-06.jpg',
+    ],
+    links: [{ label: 'App Store', href: 'https://apps.apple.com/fr/app/kams/id1616390258' }],
   },
 ]

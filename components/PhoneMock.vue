@@ -10,6 +10,29 @@ const dock = [
 function goTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+// Status bar: real clock (no AM/PM, like iOS) and real battery level when the browser exposes it
+const time = ref('9:41')
+const battery = ref(1)
+let clock: ReturnType<typeof setInterval> | undefined
+
+function tick() {
+  // iOS shows "9:41" in 12-hour locales but "09:41" in 24-hour ones
+  const hour12 = new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).resolvedOptions().hour12 ?? false
+  const parts = new Intl.DateTimeFormat(undefined, { hour: hour12 ? 'numeric' : '2-digit', minute: '2-digit', hour12 }).formatToParts(new Date())
+  time.value = parts.filter(p => p.type !== 'dayPeriod' && p.type !== 'literal' || p.value === ':').map(p => p.value).join('')
+}
+
+onMounted(() => {
+  tick()
+  clock = setInterval(tick, 15_000)
+  const nav = navigator as Navigator & { getBattery?: () => Promise<{ level: number; addEventListener: (t: string, f: () => void) => void }> }
+  nav.getBattery?.().then((b) => {
+    battery.value = b.level
+    b.addEventListener('levelchange', () => (battery.value = b.level))
+  }).catch(() => {})
+})
+onUnmounted(() => clearInterval(clock))
 </script>
 
 <template>
@@ -17,17 +40,25 @@ function goTo(id: string) {
     <div class="screen">
       <div class="island" />
       <div class="status">
-        <span class="time">9:41</span>
+        <span class="time">{{ time }}</span>
         <span class="status-icons">
           <span class="signal"><i /><i /><i /><i /></span>
-          <span class="battery"><i /></span>
+          <svg class="wifi" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round">
+            <path d="M2.5 9.5a14 14 0 0 1 19 0" />
+            <path d="M6 13a9 9 0 0 1 12 0" />
+            <path d="M9.5 16.5a4.5 4.5 0 0 1 5 0" />
+            <circle cx="12" cy="19.5" r="1.1" fill="#fff" stroke="none" />
+          </svg>
+          <span class="battery" :class="{ low: battery < 0.2 }">
+            <i :style="{ width: Math.round(battery * 100) + '%' }" />
+          </span>
         </span>
       </div>
 
       <div class="grid">
         <button v-for="e in experiences" :key="e.id" type="button" class="app" @click="goTo(e.id)">
           <span class="app-icon" :style="{ backgroundImage: `url(${e.icon})` }" />
-          <span class="app-label">{{ e.name }}</span>
+          <span class="app-label">{{ e.shortName ?? e.name }}</span>
         </button>
       </div>
 
@@ -60,7 +91,7 @@ function goTo(id: string) {
  */
 .phone {
   position: relative;
-  width: min(364px, (100vh - 48px) * 0.5076);
+  width: min(430px, (100vh - 100px) * 0.5076);
   aspect-ratio: 2000 / 3940;
   container-type: inline-size;
   filter: drop-shadow(0 20px 56px rgba(0, 0, 0, 0.55));
@@ -107,15 +138,20 @@ function goTo(id: string) {
   display: flex;
   justify-content: space-between;
   padding: 0 9cqw 0 10cqw;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Inter, sans-serif;
   font-size: 3.6cqw;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 6cqw;
   color: #fff;
 }
 .status-icons {
   display: flex;
   align-items: center;
-  gap: 1.4cqw;
+  gap: 1.6cqw;
+}
+.wifi {
+  width: 4.2cqw;
+  height: 4.2cqw;
 }
 .signal {
   display: flex;
@@ -133,20 +169,36 @@ function goTo(id: string) {
 .signal i:nth-child(2) { height: 55%; }
 .signal i:nth-child(3) { height: 75%; }
 .signal i:nth-child(4) { height: 100%; }
+/* iOS battery glyph: rounded outline, small nub on the right, fill level inside */
 .battery {
   position: relative;
-  width: 6cqw;
-  height: 2.9cqw;
-  border: 0.35cqw solid rgba(255, 255, 255, 0.5);
-  border-radius: 0.9cqw;
-  padding: 0.3cqw;
+  width: 6.4cqw;
+  height: 3.1cqw;
+  border: 0.32cqw solid rgba(255, 255, 255, 0.45);
+  border-radius: 1cqw;
+  padding: 0.35cqw;
+  margin-right: 0.7cqw;
+}
+.battery::after {
+  content: '';
+  position: absolute;
+  right: -0.95cqw;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.45cqw;
+  height: 1.1cqw;
+  border-radius: 0 0.3cqw 0.3cqw 0;
+  background: rgba(255, 255, 255, 0.45);
 }
 .battery i {
   display: block;
-  width: 100%;
   height: 100%;
   background: #fff;
-  border-radius: 0.4cqw;
+  border-radius: 0.45cqw;
+  transition: width 300ms ease;
+}
+.battery.low i {
+  background: #ff453a;
 }
 .grid {
   position: absolute;
@@ -180,13 +232,56 @@ function goTo(id: string) {
   background-position: center;
   box-shadow: 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.35);
   overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+/*
+ * iOS 26 "liquid glass" edge, after the CSS recreations of Apple's material
+ * (thin rim bright at the top, fading down the sides, muted again at the bottom,
+ * plus a specular lip and a soft sheen from above).
+ */
+.app-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 0.18cqw;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.18) 20%,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 255, 255, 0) 82%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.app-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(120% 55% at 30% 0%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%);
+  box-shadow:
+    inset 0 0.3cqw 0.3cqw rgba(255, 255, 255, 0.45),
+    inset 0 -0.5cqw 0.8cqw rgba(0, 0, 0, 0.16);
 }
 .app-label {
   max-width: 19cqw;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 2.5cqw;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Inter, sans-serif;
+  font-size: 2.7cqw;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   line-height: 1.2;
   color: #fff;
   text-shadow: 0 0.2cqw 0.6cqw rgba(0, 0, 0, 0.5);
@@ -235,14 +330,16 @@ function goTo(id: string) {
 }
 .dock-github {
   background: #111;
-  border: 0.3cqw solid rgba(255, 255, 255, 0.12);
 }
 .dock-linkedin {
-  background: #0a66c2;
+  background: linear-gradient(160deg, #3b82de 0%, #2468c9 55%, #1a58b4 100%);
 }
 .dock-linkedin svg.linkedin {
   width: 64%;
   height: 64%;
+  fill: rgba(255, 255, 255, 0.95);
+  /* soft glass relief on the glyph */
+  filter: drop-shadow(0 0.25cqw 0.35cqw rgba(0, 0, 0, 0.22)) drop-shadow(0 -0.1cqw 0.15cqw rgba(255, 255, 255, 0.35));
 }
 .home-bar {
   position: absolute;

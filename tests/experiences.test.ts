@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { experiences, profile } from '../content/experiences'
 
 describe('content', () => {
-  it('lists the five experiences, newest first', () => {
+  it('lists the experiences, newest first', () => {
     expect(experiences.map(e => e.name)).toEqual([
-      'Calico', 'Wellnotes', 'Dreamoji', 'Vibes Widget', 'Kams',
+      'Wellnotes', 'Dreamoji', 'Vibes Widget', 'Fhreads', 'ReBeal', 'Kams',
     ])
   })
   it('every entry has id, role, period, icon and bullets', () => {
@@ -20,7 +20,9 @@ describe('content', () => {
     const ids = experiences.map(e => e.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
-  it('never exposes a phone number', () => {
-    expect(JSON.stringify({ experiences, profile })).not.toMatch(/\+?\d[\d .]{8,}\d/)
+  it('never exposes a phone number in displayed text', () => {
+    // URLs (App Store ids, etc.) legitimately contain long digit runs, so only check the copy
+    const text = experiences.map(({ links: _links, ...rest }) => rest)
+    expect(JSON.stringify({ text, profile })).not.toMatch(/\+?\d[\d .]{8,}\d/)
   })
 })
