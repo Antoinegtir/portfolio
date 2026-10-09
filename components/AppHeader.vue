@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { profile } from '~/content/experiences'
+
+function toTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search)
+}
 </script>
 
 <template>
   <header class="header">
     <nav class="pill">
-      <a href="#top" class="logo">antoine.</a>
+      <a href="/" class="logo" @click.prevent="toTop">antoine.</a>
       <a :href="profile.github" target="_blank" rel="noopener" class="nav-link">GitHub</a>
       <a :href="profile.linkedin" target="_blank" rel="noopener" class="nav-link">LinkedIn</a>
     </nav>

@@ -1,6 +1,8 @@
 export type Badge = {
   title: string
   subtitle: string
+  /** Proof screenshots (store rankings…) revealed by the badge dropdown */
+  images?: string[]
 }
 
 export type Experience = {
@@ -48,9 +50,8 @@ export const experiences: Experience[] = [
       '/screens/wellnotes-05-mindmap.jpg',
       '/screens/wellnotes-06-quiz.jpg',
       '/screens/wellnotes-07-folder.jpg',
-      '/screens/wellnotes-fr-top100.jpg',
     ],
-    badges: [{ title: 'APP STORE FRANCE', subtitle: 'Top 100 on average' }],
+    badges: [{ title: 'APP STORE FRANCE', subtitle: 'Top 100 on average', images: ['/screens/wellnotes-fr-top100.jpg'] }],
   },
   {
     id: 'dreamoji',
@@ -82,15 +83,18 @@ export const experiences: Experience[] = [
       '/screens/vibes-05-photos.jpg',
       '/screens/vibes-06-memories.jpg',
       '/screens/vibes-07-map.jpg',
-      '/screens/vibes-jp-store.jpg',
-      '/screens/vibes-jp-2.jpg',
-      '/screens/vibes-fr-2.jpg',
-      '/screens/vibes-se-4.jpg',
-      '/screens/vibes-play-17.jpg',
     ],
     badges: [
-      { title: 'APP STORE', subtitle: '#2 Social Networking in Japan and France' },
-      { title: 'APP STORE', subtitle: 'Top charts in 30+ countries' },
+      {
+        title: 'APP STORE',
+        subtitle: '#2 Social Networking in Japan and France',
+        images: ['/screens/vibes-jp-store.jpg', '/screens/vibes-jp-2.jpg', '/screens/vibes-fr-2.jpg'],
+      },
+      {
+        title: 'APP STORE · GOOGLE PLAY',
+        subtitle: 'Top charts in 30+ countries',
+        images: ['/screens/vibes-se-4.jpg', '/screens/vibes-play-17.jpg'],
+      },
     ],
   },
   {

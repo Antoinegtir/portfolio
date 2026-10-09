@@ -9,6 +9,9 @@ const expanded = ref(false)
 const images = computed(() => props.experience.images ?? [])
 const visibleImages = computed(() => (expanded.value ? images.value : images.value.slice(0, PREVIEW)))
 const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
+
+// Which trophy badge is unfolded to show its proof screenshots (one at a time)
+const openBadge = ref<number | null>(null)
 </script>
 
 <template>
@@ -41,11 +44,33 @@ const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
         <path d="M6 9l6 6 6-6" />
       </svg>
     </button>
-    <div v-for="b in experience.badges ?? []" :key="b.title" class="badge">
-      <img src="/trophy.png" alt="Trophy" width="32" height="32" class="badge-emoji">
-      <div class="badge-text">
-        <span class="badge-title">{{ b.title }}</span>
-        <span class="badge-subtitle">{{ b.subtitle }}</span>
+    <div v-for="(b, i) in experience.badges ?? []" :key="b.title + b.subtitle" class="badge" :class="{ 'badge--open': openBadge === i }">
+      <component
+        :is="b.images?.length ? 'button' : 'div'"
+        :type="b.images?.length ? 'button' : undefined"
+        class="badge-head"
+        :aria-expanded="b.images?.length ? openBadge === i : undefined"
+        @click="b.images?.length && (openBadge = openBadge === i ? null : i)"
+      >
+        <img src="/trophy.png" alt="Trophy" width="32" height="32" class="badge-emoji">
+        <div class="badge-text">
+          <span class="badge-title">{{ b.title }}</span>
+          <span class="badge-subtitle">{{ b.subtitle }}</span>
+        </div>
+        <svg v-if="b.images?.length" class="badge-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </component>
+      <div v-if="b.images?.length && openBadge === i" class="shots badge-shots">
+        <img
+          v-for="src in b.images"
+          :key="src"
+          :src="src"
+          :alt="`${b.title} ${b.subtitle}`"
+          class="shot"
+          loading="lazy"
+          @click="open(src, $event.currentTarget as HTMLElement, `${b.title} ${b.subtitle}`)"
+        >
       </div>
     </div>
   </article>
@@ -159,18 +184,49 @@ const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
   transform: rotate(180deg);
 }
 .badge {
-  display: flex;
-  align-items: center;
-  gap: 2px;
   margin-top: 16px;
   margin-bottom: 8px;
-  padding: 12px 20px 12px 10px;
   border-radius: 8px;
   border: 1px solid rgba(84, 86, 117, 0.66);
   background: rgba(84, 86, 117, 0.4);
+  overflow: hidden;
 }
 .badge + .badge {
   margin-top: 0;
+}
+.badge-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 14px 12px 10px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+button.badge-head {
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+button.badge-head:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.badge-chevron {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+  transition: transform 200ms ease;
+}
+.badge--open .badge-chevron {
+  transform: rotate(180deg);
+}
+.badge-shots {
+  margin-top: 0;
+  padding: 0 10px 12px;
 }
 .badge-emoji {
   width: 32px;

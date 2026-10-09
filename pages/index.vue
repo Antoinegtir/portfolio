@@ -8,8 +8,7 @@ useSeoMeta({
   ogTitle: title,
   ogDescription: profile.bio,
   twitterCard: 'summary',
-})
-</script>
+})</script>
 
 <template>
   <div>

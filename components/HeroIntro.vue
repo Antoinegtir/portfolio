@@ -38,6 +38,9 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
 </template>
 
 <style scoped>
+#top {
+  scroll-margin-top: 120px; /* keeps the hero clear of the header when the URL carries #top */
+}
 .title {
   font-size: 32px;
   font-weight: 700;
