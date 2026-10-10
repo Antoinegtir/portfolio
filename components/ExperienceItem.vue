@@ -204,7 +204,7 @@ onMounted(() => {
   inset: 0;
   background: rgba(0, 0, 0, 0.58);
   /* the circle is cut out of the veil (47% of the corner distance), then grows past the corners */
-  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 66%);
+  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 58%);
   -webkit-mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
   mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
 }

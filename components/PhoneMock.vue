@@ -149,7 +149,7 @@ onUnmounted(() => clearInterval(clock))
               <span class="pie" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
             </template>
           </span>
-          <span class="app-label">{{ icons[e.id]?.ready || icons[e.id]?.reveal ? (e.shortName ?? e.name) : 'Installing…' }}</span>
+          <span class="app-label">{{ icons[e.id]?.ready ? (e.shortName ?? e.name) : 'Installing…' }}</span>
         </button>
         <!-- demo tile: replays a simulated 3s download on every click -->
         <button v-if="SHOW_DEMO" type="button" class="app" title="Replay the loading animation" @click="replayDemo">
@@ -161,7 +161,7 @@ onUnmounted(() => clearInterval(clock))
               <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
             </template>
           </span>
-          <span class="app-label">{{ demo.ready || demo.reveal ? 'Demo' : 'Installing…' }}</span>
+          <span class="app-label">{{ demo.ready ? 'Demo' : 'Installing…' }}</span>
         </button>
       </div>
 
@@ -252,7 +252,7 @@ onUnmounted(() => clearInterval(clock))
   inset: 0;
   background: rgba(0, 0, 0, 0.58);
   /* the circle is cut out of the veil (47% of the corner distance), then grows past the corners */
-  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 66%);
+  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 58%);
   -webkit-mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
   mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
 }
