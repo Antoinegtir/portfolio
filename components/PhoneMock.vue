@@ -82,6 +82,12 @@ onUnmounted(() => {
   if (raf) cancelAnimationFrame(raf)
 })
 
+function toTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const { icons, demo, replayDemo } = useIconLoading()
+
 function goTo(id: string) {
   activeId.value = id
   pin(2500) // released earlier by scrollend where supported
@@ -131,8 +137,28 @@ onUnmounted(() => clearInterval(clock))
 
       <div class="grid">
         <button v-for="e in experiences" :key="e.id" type="button" class="app" :class="{ 'app--active': e.id === activeId }" @click="goTo(e.id)">
-          <span class="app-icon" :style="{ backgroundImage: `url(${e.icon})` }" />
-          <span class="app-label">{{ e.shortName ?? e.name }}</span>
+          <span class="app-icon" :class="{ 'app-icon--loading': !icons[e.id]?.ready }" :style="icons[e.id]?.ready ? { backgroundImage: `url(${e.icon})` } : undefined">
+            <template v-if="!icons[e.id]?.ready">
+              <IconBlueprint />
+              <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0 }" />
+            </template>
+          </span>
+          <span class="app-label">{{ icons[e.id]?.ready ? (e.shortName ?? e.name) : 'Installing…' }}</span>
+        </button>
+        <!-- the site itself, drawn as an icon-grid blueprint -->
+        <button type="button" class="app" @click="toTop">
+          <span class="app-icon"><IconBlueprint /></span>
+          <span class="app-label">Portfolio</span>
+        </button>
+        <!-- demo tile: replays a simulated 3s download on every click -->
+        <button type="button" class="app" title="Replay the loading animation" @click="replayDemo">
+          <span class="app-icon" :class="{ 'app-icon--loading': !demo.ready }" :style="demo.ready ? { backgroundImage: 'url(/logo.png)' } : undefined">
+            <template v-if="!demo.ready">
+              <IconBlueprint />
+              <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size }" />
+            </template>
+          </span>
+          <span class="app-label">{{ demo.ready ? 'Demo' : 'Installing…' }}</span>
         </button>
       </div>
 
@@ -215,6 +241,27 @@ onUnmounted(() => clearInterval(clock))
 .blob:nth-child(3) { opacity: 0.4; }
 .app--active .app-label {
   color: #fff;
+}
+/* loading state: dimmed blueprint + iOS-style pie, then the real icon fades in */
+/* dim only the blueprint underneath; the ring/pie stays pure white */
+.app-icon--loading :deep(.blueprint) {
+  filter: brightness(0.42) saturate(0.4);
+}
+/* dot -> ring -> pie: the element scales with --s, the thick white border is the ring, the conic fill the pie */
+.pie {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 66%;
+  height: 66%;
+  border-radius: 50%;
+  border: 0.85cqw solid #fff; /* ring ≈ 6% of the tile, like iOS */
+  background: conic-gradient(#fff calc(var(--p) * 360deg), transparent 0);
+  background-clip: padding-box;
+  transform: scale(var(--s));
+}
+.app-icon {
+  transition: filter 300ms ease;
 }
 @media (prefers-reduced-motion: reduce) {
   .blob { transition: none; }

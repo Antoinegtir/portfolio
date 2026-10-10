@@ -10,6 +10,7 @@ const TOP_OFFSET = 96 // where a section title lands below the bar
 const ACTIVE_LINE = 0.7
 
 const activeId = ref(experiences[0].id)
+const { icons, demo, replayDemo } = useIconLoading()
 const activeIndex = computed(() => Math.max(0, experiences.findIndex(e => e.id === activeId.value)))
 
 // While a click-triggered smooth scroll runs, the clicked app stays active so the highlight
@@ -31,6 +32,9 @@ function updateActive() {
     if (r.top + padding + (r.height - padding) / 2 <= line + 8) current = e.id
   }
   activeId.value = current
+}
+function toTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 function goTo(id: string) {
   const el = document.getElementById(id)
@@ -66,7 +70,25 @@ onUnmounted(() => {
       :aria-label="e.name"
       @click="goTo(e.id)"
     >
-      <img :src="e.icon" alt="" width="36" height="36">
+      <span class="rail-icon" :class="{ 'rail-icon--loading': !icons[e.id]?.ready }">
+        <img v-if="icons[e.id]?.ready" :src="e.icon" alt="" width="36" height="36">
+        <template v-else>
+          <IconBlueprint />
+          <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0 }" />
+        </template>
+      </span>
+    </button>
+    <button type="button" class="rail-app" title="Portfolio" aria-label="Portfolio" @click="toTop">
+      <span class="rail-icon"><IconBlueprint /></span>
+    </button>
+    <button type="button" class="rail-app" title="Demo: replay the loading animation" aria-label="Demo" @click="replayDemo">
+      <span class="rail-icon" :class="{ 'rail-icon--loading': !demo.ready }">
+        <img v-if="demo.ready" src="/logo.png" alt="" width="36" height="36">
+        <template v-else>
+          <IconBlueprint />
+          <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size }" />
+        </template>
+      </span>
     </button>
   </nav>
 </template>
@@ -75,7 +97,10 @@ onUnmounted(() => {
 .rail {
   position: fixed;
   right: 10px;
+  /* svh = small viewport height: unchanged when the mobile browser chrome collapses, so the
+     rail does not slide when the page's top bar appears */
   top: 50%;
+  top: 50svh;
   transform: translateY(-50%);
   z-index: 35;
   display: flex;
@@ -107,11 +132,34 @@ onUnmounted(() => {
   transform: scale(0.92);
   transition: opacity 200ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.rail-app img {
+.rail-icon {
+  position: relative;
   display: block;
   width: 36px;
   height: 36px;
   border-radius: 10px;
+  overflow: hidden;
+  transition: filter 300ms ease;
+}
+.rail-icon img {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+.rail-icon--loading :deep(.blueprint) {
+  filter: brightness(0.42) saturate(0.4);
+}
+.pie {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2.2px solid #fff;
+  background: conic-gradient(#fff calc(var(--p) * 360deg), transparent 0);
+  background-clip: padding-box;
+  transform: scale(var(--s));
 }
 .rail-app:hover {
   opacity: 0.85;
