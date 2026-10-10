@@ -58,7 +58,7 @@ onMounted(() => {
         <img v-if="icon.loaded" :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32" class="real">
         <template v-if="!icon.ready">
           <span class="veil" :class="{ pre: icon.pre }" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
-          <span class="pie" :class="{ pre: icon.pre }" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
+          <span v-if="icon.progress < 1 || !icon.loaded" class="pie" :class="{ pre: icon.pre }" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
         </template>
       </span>
       <h2 class="name">{{ experience.name }}</h2>
