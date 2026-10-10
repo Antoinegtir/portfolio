@@ -7,7 +7,33 @@ const dock = [
   { label: 'LinkedIn', kind: 'linkedin', href: profile.linkedin },
 ] as const
 
+// Active app = the last section whose title row has crossed 70% of the viewport height, so the
+// wallpaper starts shifting as soon as the next app comes into view. Clicking an icon pins it right away.
+const ACTIVE_LINE = 0.7
+const activeId = ref(experiences[0].id)
+const palette = computed(() => experiences.find(e => e.id === activeId.value)?.palette ?? experiences[0].palette)
+
+function updateActive() {
+  const line = window.innerHeight * ACTIVE_LINE
+  let current = experiences[0].id
+  for (const e of experiences) {
+    const el = document.getElementById(e.id)
+    if (!el) continue
+    const r = el.getBoundingClientRect()
+    const padding = parseFloat(getComputedStyle(el).paddingTop) || 0
+    const rowCenter = r.top + padding + (r.height - padding) / 2
+    if (rowCenter <= line + 8) current = e.id
+  }
+  activeId.value = current
+}
+onMounted(() => {
+  updateActive()
+  window.addEventListener('scroll', updateActive, { passive: true })
+})
+onUnmounted(() => window.removeEventListener('scroll', updateActive))
+
 function goTo(id: string) {
+  activeId.value = id
   const el = document.getElementById(id)
   if (!el) return
   // Align the section title row (icon + name) with the phone's status bar line, like a hand-off between the two columns
@@ -43,6 +69,11 @@ onUnmounted(() => clearInterval(clock))
 <template>
   <div class="phone" aria-hidden="true">
     <div class="screen">
+      <div class="wallpaper" aria-hidden="true">
+        <i class="blob b1" :style="{ backgroundColor: palette[0] }" />
+        <i class="blob b2" :style="{ backgroundColor: palette[1] }" />
+        <i class="blob b3" :style="{ backgroundColor: palette[2] }" />
+      </div>
       <div class="island" />
       <div class="status">
         <span class="time">{{ time }}</span>
@@ -50,7 +81,7 @@ onUnmounted(() => clearInterval(clock))
       </div>
 
       <div class="grid">
-        <button v-for="e in experiences" :key="e.id" type="button" class="app" @click="goTo(e.id)">
+        <button v-for="e in experiences" :key="e.id" type="button" class="app" :class="{ 'app--active': e.id === activeId }" @click="goTo(e.id)">
           <span class="app-icon" :style="{ backgroundImage: `url(${e.icon})` }" />
           <span class="app-label">{{ e.shortName ?? e.name }}</span>
         </button>
@@ -108,11 +139,32 @@ onUnmounted(() => clearInterval(clock))
   border-radius: 7cqw;
   overflow: hidden;
   z-index: 1;
-  background:
-    radial-gradient(60cqw 60cqw at 20% 15%, rgba(120, 90, 255, 0.55), transparent 70%),
-    radial-gradient(70cqw 70cqw at 90% 40%, rgba(40, 110, 255, 0.45), transparent 70%),
-    radial-gradient(60cqw 60cqw at 30% 95%, rgba(255, 70, 160, 0.35), transparent 70%),
-    linear-gradient(180deg, #0a0a14 0%, #05050a 100%);
+  background: linear-gradient(180deg, #0a0a14 0%, #05050a 100%);
+}
+/* Wallpaper: three blurred colour blobs; background-color animates, so the palette cross-fades smoothly */
+.wallpaper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.blob {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(22cqw);
+  transition: background-color 900ms ease;
+  will-change: background-color;
+}
+.b1 { left: -15cqw; top: -10cqw; width: 70cqw; height: 70cqw; opacity: 0.55; }
+.b2 { right: -25cqw; top: 45cqw; width: 80cqw; height: 80cqw; opacity: 0.45; }
+.b3 { left: -5cqw; bottom: -20cqw; width: 70cqw; height: 70cqw; opacity: 0.4; }
+.app--active .app-label {
+  color: #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .blob { transition: none; }
 }
 .island {
   position: absolute;

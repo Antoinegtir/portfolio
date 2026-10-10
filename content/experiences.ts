@@ -10,6 +10,8 @@ export type Experience = {
   name: string
   /** Shorter label for the phone home screen (iOS truncates long names) */
   shortName?: string
+  /** Three accent colours (from the app icon) driving the phone wallpaper when the app is active */
+  palette: [string, string, string]
   /** Audience size, normalised as '80.000+' / '3.000.000+'; rendered the same way for every app */
   users?: string
   /** Where the users figure comes from, when it is not first-party */
@@ -42,6 +44,7 @@ export const experiences: Experience[] = [
     role: 'Solo Founder',
     period: '2025.02 - Present',
     icon: '/icons/wellnotes.png',
+    palette: ['#f5b400', '#ffe08a', '#fff3c4'],
     users: '80.000+',
     bullets: [
       'Student app with 1,000+ ratings at 4.6 stars.',
@@ -65,6 +68,7 @@ export const experiences: Experience[] = [
     role: 'Advisor to the CTO',
     period: '6 months',
     icon: '/icons/atclub.png',
+    palette: ['#ff2d55', '#ff6a3d', '#ff8ab5'],
     users: '1.000.000+',
     usersSource: 'AppMagic',
     bullets: [
@@ -88,6 +92,7 @@ export const experiences: Experience[] = [
     role: 'Founding Engineer',
     period: '2023.08 - 2025.11',
     icon: '/icons/vibes.png',
+    palette: ['#8b7fd6', '#b8a7e6', '#5b4bc4'],
     users: '3.000.000+',
     bullets: [
       'Founding member of a social network popular in Japan, top of the App Store charts in 30+ countries.',
@@ -122,6 +127,7 @@ export const experiences: Experience[] = [
     role: 'Founding Engineer',
     period: '2024.09 - 2025.01',
     icon: '/icons/dreamoji.png',
+    palette: ['#7c3aed', '#ec4899', '#f97316'],
     users: '300.000+',
     bullets: [
       'Shipped an app generating Genmoji-style AI emojis before iOS 18 launched.',
@@ -134,6 +140,7 @@ export const experiences: Experience[] = [
     role: 'Open Source',
     period: '2023.07',
     icon: '/icons/threads.png',
+    palette: ['#4a4a4a', '#8a8a8a', '#1f1f1f'],
     bullets: [
       'Built a fully functional clone of Threads in Flutter and Firebase, 24 hours after Threads launched.',
       'The most-starred Flutter Threads clone on GitHub (130+ stars), cloned by tens of thousands of developers.',
@@ -153,6 +160,7 @@ export const experiences: Experience[] = [
     role: 'Open Source',
     period: '2023.06',
     icon: '/icons/rebeal.png',
+    palette: ['#3a3a3a', '#6b6b6b', '#161616'],
     bullets: [
       'Built a fully functional clone of BeReal in Flutter and Firebase in 48 hours.',
       'The most-starred BeReal clone on GitHub, across all languages (66 stars, 16 forks).',
@@ -169,6 +177,7 @@ export const experiences: Experience[] = [
     role: 'Solo Founder',
     period: '2021.12 - 2023',
     icon: '/icons/kams.png',
+    palette: ['#22d3ee', '#e040fb', '#fde047'],
     bullets: ['Launched my first social network at 16. It did not take off, but I learned a lot.'],
     images: [
       '/screens/kams-01.jpg',
