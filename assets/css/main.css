@@ -40,9 +40,14 @@ body {
 }
 
 @media (min-width: 1024px) {
+  /* The phone's rendered width (same formula as .phone in PhoneMock): it shrinks on short windows,
+     so the column and the layout follow it instead of reserving a fixed 430px. */
+  :root {
+    --phone-w: min(430px, (100vh - 100px) * 0.5076);
+  }
   .phone-spacer {
     display: block;
-    width: 430px;
+    width: var(--phone-w);
     flex-shrink: 0;
   }
   /* Same geometry as the shell (480 content + 32 gap + 430 phone, centred), but out of the
@@ -59,13 +64,14 @@ body {
   .phone-row {
     display: flex;
     justify-content: flex-end;
-    width: 942px;
+    width: calc(480px + 32px + var(--phone-w)); /* content column + gap + phone */
     max-width: 100%;
   }
   .phone-col {
     display: flex;
     align-items: center;
-    width: 430px;
+    justify-content: center;
+    width: var(--phone-w);
     height: 100vh;
     box-sizing: border-box;
     padding-top: 84px; /* keep clear of the floating header pill */
