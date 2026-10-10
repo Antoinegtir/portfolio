@@ -101,13 +101,33 @@ async function show(s: LightboxState) {
   }, 20)
 }
 
+// Thumbnail to fly to/from for a given image, only when it is really displayed on the page
+// (the extra screenshots are collapsed behind "N more screenshots", badge proofs behind their
+// dropdown). A hidden thumbnail has no box, and the image fades out in place instead.
+function visibleThumbBox(src: string) {
+  const thumb = document.querySelector<HTMLImageElement>(`img.shot[src="${src}"]`)
+  if (!thumb || !thumb.offsetParent) return null
+  const r = thumb.getBoundingClientRect()
+  if (r.width === 0 || r.height === 0) return null
+  return { x: r.left, y: r.top, w: r.width, h: r.height }
+}
+
+const fading = ref(false) // closing without a visible thumbnail: fade out in place
+
 function hide() {
   if (!current.value) return
   expanded.value = false
-  box.value = current.value.from
+  const to = visibleThumbBox(current.value.src)
+  if (to) {
+    box.value = to
+  }
+  else {
+    fading.value = true
+  }
   setTimeout(() => {
     visible.value = false
     current.value = null
+    fading.value = false
   }, DURATION)
 }
 
@@ -117,22 +137,11 @@ async function step(delta: number) {
   const next = group.value[(index.value + delta + count.value) % count.value]
   if (carousel.value) {
     s.src = next
-    const thumb = document.querySelector<HTMLImageElement>(`img.shot[src="${next}"]`)
-    if (thumb) {
-      const r = thumb.getBoundingClientRect()
-      s.from = { x: r.left, y: r.top, w: r.width, h: r.height }
-    }
     return
   }
   swapping.value = true
   await new Promise(r => setTimeout(r, 120))
   s.src = next
-  // Fly back to the matching thumbnail on close, when it is in the page
-  const thumb = document.querySelector<HTMLImageElement>(`img.shot[src="${next}"]`)
-  if (thumb) {
-    const r = thumb.getBoundingClientRect()
-    s.from = { x: r.left, y: r.top, w: r.width, h: r.height }
-  }
   await nextTick()
   const el = img.value!
   await waitDecoded(el)
@@ -210,7 +219,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
         :src="current?.src"
         :alt="current?.alt"
         class="lightbox-img"
-        :class="{ 'lightbox-img--swapping': swapping, 'lightbox-img--hidden': carousel && expanded }"
+        :class="{ 'lightbox-img--swapping': swapping, 'lightbox-img--hidden': carousel && expanded, 'lightbox-img--fading': fading }"
         :style="{ left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px' }"
       >
       <button v-if="expanded" type="button" class="close" aria-label="Close" @click.stop="close">
@@ -319,6 +328,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 }
 .lightbox--open .lightbox-img {
   border-radius: 12px;
+}
+.lightbox-img--fading {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 220ms ease, transform 220ms ease;
 }
 .lightbox-img--swapping {
   opacity: 0.35;

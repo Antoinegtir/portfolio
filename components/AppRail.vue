@@ -78,7 +78,7 @@ onUnmounted(() => {
       @click="goTo(e.id)"
     >
       <span class="rail-icon">
-        <IconBlueprint v-if="!icons[e.id]?.ready" />
+        <IconBlueprint v-if="!icons[e.id]?.loaded" />
         <span v-if="!icons[e.id]?.loaded" class="icon-shimmer" />
         <img v-if="icons[e.id]?.loaded" :src="e.icon" alt="" width="36" height="36" class="real">
         <template v-if="!icons[e.id]?.ready">
@@ -89,7 +89,7 @@ onUnmounted(() => {
     </button>
     <button v-if="SHOW_DEMO" type="button" class="rail-app" title="Demo: replay the loading animation" aria-label="Demo" @click="replayDemo">
       <span class="rail-icon">
-        <img v-if="demo.loaded" src="/logo.png" alt="" width="36" height="36">
+        <img v-if="demo.loaded" src="/logo.webp" alt="" width="36" height="36">
         <IconBlueprint v-else />
         <span v-if="!demo.loaded" class="icon-shimmer" />
         <template v-if="!demo.ready">

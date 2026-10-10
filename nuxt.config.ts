@@ -1,7 +1,7 @@
 // Public URL of the deployed site: canonical, Open Graph, sitemap and JSON-LD need absolute URLs.
 // Override with NUXT_PUBLIC_SITE_URL at build time (e.g. a custom domain).
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {}
-const siteUrl = (env.NUXT_PUBLIC_SITE_URL || 'https://antoinegtir.github.io/portfolio').replace(/\/$/, '')
+const siteUrl = (env.NUXT_PUBLIC_SITE_URL || 'https://antoinegtr.com').replace(/\/$/, '')
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',

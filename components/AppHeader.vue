@@ -51,8 +51,10 @@ const morphVars = computed(() => ({
   '--pill-left': `${pillLeft.value}px`,
   '--pill-w': `${pillWidth.value}px`,
 }))
+// The inline transforms below are always written, also in CSS mode: the scroll-driven animation
+// overrides them while its timeline is active, and they take over the instant the browser drops
+// the timeline (background tab), so the identity never snaps back to the hero or to (0, 0).
 const avatarStyle = computed(() => {
-  if (cssMode.value) return {}
   const t = p.value
   const s = lerp(HERO.avatar, BAR.avatar, t)
   return {
@@ -60,20 +62,17 @@ const avatarStyle = computed(() => {
   }
 })
 const nameStyle = computed(() => {
-  if (cssMode.value) return {}
   const t = p.value
   const s = lerp(HERO.avatar, BAR.avatar, t)
   const x = lerp(heroAvatar.value.x, barAvatar.value.x, t) + s + lerp(HERO.gap, BAR.gap, t)
   const y = lerp(heroAvatar.value.y, barAvatar.value.y, t) + s / 2
   return { transform: `translate(${x}px, ${y}px) translateY(-50%) scale(${lerp(HERO.name, barName.value, t) / HERO.name})` }
 })
-const subtitleStyle = computed(() => (cssMode.value ? {} : { opacity: Math.max(0, 1 - p.value * 2.5) }))
+const subtitleStyle = computed(() => ({ opacity: Math.max(0, 1 - p.value * 2.5) }))
 // The pill fades in behind the avatar and name during the second half of the morph
 const pillStyle = computed(() => {
-  const base = { left: `${pillLeft.value}px`, width: `${pillWidth.value}px` }
-  if (cssMode.value) return base
   const t = Math.max(0, (p.value - 0.45) / 0.55)
-  return { ...base, opacity: t, transform: `translateY(${(1 - t) * -8}px)` }
+  return { left: `${pillLeft.value}px`, width: `${pillWidth.value}px`, opacity: t, transform: `translateY(${(1 - t) * -8}px)` }
 })
 const linksStyle = computed(() => ({ opacity: absorbed.value, pointerEvents: (absorbed.value > 0.5 ? 'auto' : 'none') as 'auto' | 'none' }))
 
@@ -113,6 +112,24 @@ function toTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
   if (location.hash) history.replaceState(null, '', location.pathname + location.search)
 }
+// Browsers sometimes drop the scroll timeline while the tab is in the background and come back
+// with the animation stuck on its first keyframe (avatar back in the hero while scrolled down).
+// On return, fall back to the JS transforms for two frames (same trajectory, so no visible jump)
+// and restart the CSS animations from scratch.
+let resyncRaf = 0
+function resync() {
+  measure()
+  update()
+  if (!CSS.supports('animation-timeline: scroll()')) return
+  cssMode.value = false
+  cancelAnimationFrame(resyncRaf)
+  resyncRaf = requestAnimationFrame(() => {
+    resyncRaf = requestAnimationFrame(() => { cssMode.value = true })
+  })
+}
+function onVisibility() {
+  if (!document.hidden) resync()
+}
 onMounted(() => {
   cssMode.value = CSS.supports('animation-timeline: scroll()')
   measure()
@@ -121,11 +138,18 @@ onMounted(() => {
   identityMounted.value = true
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onResize)
+  window.addEventListener('pageshow', resync)
+  window.addEventListener('focus', resync)
+  document.addEventListener('visibilitychange', onVisibility)
   document.fonts?.ready.then(() => { measure(); update() }) // positions shift once Satoshi is in
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onResize)
+  window.removeEventListener('pageshow', resync)
+  window.removeEventListener('focus', resync)
+  document.removeEventListener('visibilitychange', onVisibility)
+  cancelAnimationFrame(resyncRaf)
 })
 </script>
 
@@ -141,7 +165,7 @@ onUnmounted(() => {
 
     <!-- identity: shared between hero and bar -->
     <a href="/" class="identity" @click.prevent="toTop">
-      <img v-shimmer src="/avatar.png" alt="" class="avatar shimmer" :style="avatarStyle">
+      <img v-shimmer src="/avatar.webp" alt="" class="avatar shimmer" :style="avatarStyle">
       <span class="name" :style="nameStyle">
         {{ profile.name }}
         <small class="subtitle" :style="subtitleStyle">{{ profile.tagline }} <span class="flag" role="img" aria-label="France">🇫🇷</span></small>

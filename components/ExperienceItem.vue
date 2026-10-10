@@ -14,7 +14,7 @@ const hiddenPreview = computed(() => images.value.slice(PREVIEW, PREVIEW + 3)) /
 const STORES = [
   { match: 'APP STORE', logo: '/stores/app-store.svg' },
   { match: 'GOOGLE PLAY', logo: '/stores/google-play.svg' },
-  { match: 'THREADS', logo: '/icons/threads.png' },
+  { match: 'THREADS', logo: '/icons/threads.webp' },
 ]
 function titleParts(title: string) {
   return title.split('·').map((t) => {
@@ -53,7 +53,7 @@ onMounted(() => {
   <article ref="root" class="reveal" :class="{ 'reveal--in': shown }">
     <div :id="experience.id" class="heading">
       <span class="icon">
-        <IconBlueprint v-if="!icon.ready" />
+        <IconBlueprint v-if="!icon.loaded" />
         <span v-if="!icon.loaded" class="icon-shimmer" />
         <img v-if="icon.loaded" :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32" class="real">
         <template v-if="!icon.ready">
@@ -123,7 +123,7 @@ onMounted(() => {
         :for="b.images?.length ? `badge-${experience.id}-${i}` : undefined"
         class="badge-head"
       >
-        <img src="/trophy.png" alt="Trophy" width="32" height="32" class="badge-emoji">
+        <img src="/trophy.webp" alt="Trophy" width="32" height="32" class="badge-emoji">
         <div class="badge-text">
           <span class="badge-title">
             <template v-for="(part, k) in titleParts(b.title)" :key="k">

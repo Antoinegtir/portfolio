@@ -96,7 +96,7 @@ export function useIconLoading() {
   const demo = reactive<IconState>({ loaded: false, ready: false, progress: 0, size: 0, reveal: 0, pre: false })
 
   function replayDemo() {
-    track(demo, `/logo.png?demo=${Date.now()}`, 3000)
+    track(demo, `/logo.webp?demo=${Date.now()}`, 3000)
   }
   onMounted(() => {
     for (const e of experiences) track(icons[e.id], e.icon)

@@ -49,7 +49,7 @@ const person = {
   jobTitle: profile.tagline,
   description: description,
   url,
-  image: `${siteUrl}/avatar.png`,
+  image: `${siteUrl}/avatar.webp`,
   email: `mailto:${profile.email}`,
   nationality: { '@type': 'Country', name: 'France' },
   homeLocation: [

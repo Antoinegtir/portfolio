@@ -136,7 +136,7 @@ onUnmounted(() => clearInterval(clock))
       <div class="island" />
       <div class="status">
         <span class="time">{{ time }}</span>
-        <img src="/statusbar.png" alt="" class="status-icons" width="161" height="31">
+        <img src="/statusbar.webp" alt="" class="status-icons" width="161" height="31">
       </div>
 
       <div class="grid">
@@ -153,7 +153,7 @@ onUnmounted(() => clearInterval(clock))
         </button>
         <!-- demo tile: replays a simulated 3s download on every click -->
         <button v-if="SHOW_DEMO" type="button" class="app" title="Replay the loading animation" @click="replayDemo">
-          <span class="app-icon" :style="demo.loaded ? { backgroundImage: 'url(/logo.png)' } : undefined">
+          <span class="app-icon" :style="demo.loaded ? { backgroundImage: 'url(/logo.webp)' } : undefined">
             <IconBlueprint v-if="!demo.loaded" />
             <span v-if="!demo.loaded" class="icon-shimmer" />
             <template v-if="!demo.ready">
@@ -182,7 +182,7 @@ onUnmounted(() => clearInterval(clock))
 
       <div class="home-bar" />
     </div>
-    <img src="/iphone-frame.png" alt="" class="frame" width="812" height="1600">
+    <img src="/iphone-frame.webp" alt="" class="frame" width="812" height="1600">
   </div>
 </template>
 
@@ -359,8 +359,7 @@ onUnmounted(() => clearInterval(clock))
     rgba(255, 255, 255, 0.9) 0%,
     rgba(255, 255, 255, 0.18) 20%,
     rgba(255, 255, 255, 0) 38%,
-    rgba(255, 255, 255, 0) 82%,
-    rgba(255, 255, 255, 0.22) 100%
+    rgba(255, 255, 255, 0) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -432,7 +431,7 @@ onUnmounted(() => clearInterval(clock))
   height: 62%;
 }
 .dock-mail {
-  background-image: url('/icons/mail.png');
+  background-image: url('/icons/mail.webp');
 }
 .dock-github {
   background: #111;

@@ -12,7 +12,7 @@ describe('content', () => {
       expect(e.id).toMatch(/^[a-z0-9-]+$/)
       expect(e.role).toBeTruthy()
       expect(e.period).toBeTruthy()
-      expect(e.icon).toMatch(/^\/icons\/.+\.png$/)
+      expect(e.icon).toMatch(/^\/icons\/.+\.webp$/)
       expect(e.bullets.length).toBeGreaterThan(0)
     }
   })
