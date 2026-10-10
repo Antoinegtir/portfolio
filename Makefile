@@ -19,7 +19,7 @@ DEV_PORT ?= 3000
 -include .env
 export
 
-.PHONY: build deploy release check dev
+.PHONY: build deploy release check dev sslcheck
 
 build:
 	@if lsof -tiTCP:$(DEV_PORT) -sTCP:LISTEN >/dev/null 2>&1; then \
@@ -46,3 +46,11 @@ check:
 
 dev:
 	npm run dev -- --host
+
+# Probe HTTPS 12 times: OVH balances across several frontends and a fresh certificate takes a while
+# to reach all of them. Only enable the HTTPS redirect in public/.htaccess once this reports 12/12.
+sslcheck:
+	@ok=0; for i in $$(seq 1 12); do \
+	  s=$$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://antoinegtr.com/?n=$$i"); \
+	  [ "$$s" = "200" ] && ok=$$((ok+1)); \
+	done; echo "valid certificate on $$ok/12 requests"
