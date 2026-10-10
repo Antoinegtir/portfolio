@@ -146,7 +146,7 @@ onUnmounted(() => clearInterval(clock))
             <span v-if="!icons[e.id]?.loaded" class="icon-shimmer" />
             <template v-if="!icons[e.id]?.ready">
               <span class="veil" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
-              <span v-if="(icons[e.id]?.progress ?? 0) < 1 || !icons[e.id]?.loaded" class="pie" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+              <span class="pie" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
             </template>
           </span>
           <span class="app-label">{{ icons[e.id]?.ready || icons[e.id]?.reveal ? (e.shortName ?? e.name) : 'Installing…' }}</span>
@@ -158,7 +158,7 @@ onUnmounted(() => clearInterval(clock))
             <span v-if="!demo.loaded" class="icon-shimmer" />
             <template v-if="!demo.ready">
               <span class="veil" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
-              <span v-if="demo.progress < 1 || !demo.loaded" class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
+              <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
             </template>
           </span>
           <span class="app-label">{{ demo.ready || demo.reveal ? 'Demo' : 'Installing…' }}</span>
