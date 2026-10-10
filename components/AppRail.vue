@@ -70,11 +70,12 @@ onUnmounted(() => {
       :aria-label="e.name"
       @click="goTo(e.id)"
     >
-      <span class="rail-icon" :class="{ 'rail-icon--loading': !icons[e.id]?.ready }">
-        <img v-if="icons[e.id]?.ready" :src="e.icon" alt="" width="36" height="36">
-        <template v-else>
-          <IconBlueprint />
-          <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0 }" />
+      <span class="rail-icon">
+        <img v-if="icons[e.id]?.loaded" :src="e.icon" alt="" width="36" height="36">
+        <IconBlueprint v-else />
+        <template v-if="!icons[e.id]?.ready">
+          <span class="veil" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+          <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
         </template>
       </span>
     </button>
@@ -82,11 +83,12 @@ onUnmounted(() => {
       <span class="rail-icon"><IconBlueprint /></span>
     </button>
     <button type="button" class="rail-app" title="Demo: replay the loading animation" aria-label="Demo" @click="replayDemo">
-      <span class="rail-icon" :class="{ 'rail-icon--loading': !demo.ready }">
-        <img v-if="demo.ready" src="/logo.png" alt="" width="36" height="36">
-        <template v-else>
-          <IconBlueprint />
-          <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size }" />
+      <span class="rail-icon">
+        <img v-if="demo.loaded" src="/logo.png" alt="" width="36" height="36">
+        <IconBlueprint v-else />
+        <template v-if="!demo.ready">
+          <span class="veil" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
+          <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
         </template>
       </span>
     </button>
@@ -146,8 +148,14 @@ onUnmounted(() => {
   width: 36px;
   height: 36px;
 }
-.rail-icon--loading :deep(.blueprint) {
-  filter: brightness(0.42) saturate(0.4);
+.veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  /* the circle is cut out of the veil (47% of the corner distance), then grows past the corners */
+  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 58%);
+  -webkit-mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
+  mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
 }
 .pie {
   position: absolute;
@@ -156,8 +164,9 @@ onUnmounted(() => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2.2px solid #fff;
-  background: conic-gradient(#fff calc(var(--p) * 360deg), transparent 0);
+  /* the ring is see-through: the icon shows undimmed through it, like through the loaded share */
+  border: 2.2px solid transparent;
+  background: conic-gradient(transparent calc(var(--p, 0) * 360deg), rgba(0, 0, 0, 0.58) 0);
   background-clip: padding-box;
   transform: scale(var(--s));
 }

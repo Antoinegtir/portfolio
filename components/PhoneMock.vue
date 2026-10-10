@@ -137,10 +137,11 @@ onUnmounted(() => clearInterval(clock))
 
       <div class="grid">
         <button v-for="e in experiences" :key="e.id" type="button" class="app" :class="{ 'app--active': e.id === activeId }" @click="goTo(e.id)">
-          <span class="app-icon" :class="{ 'app-icon--loading': !icons[e.id]?.ready }" :style="icons[e.id]?.ready ? { backgroundImage: `url(${e.icon})` } : undefined">
+          <span class="app-icon" :style="icons[e.id]?.loaded ? { backgroundImage: `url(${e.icon})` } : undefined">
+            <IconBlueprint v-if="!icons[e.id]?.loaded" />
             <template v-if="!icons[e.id]?.ready">
-              <IconBlueprint />
-              <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0 }" />
+              <span class="veil" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+              <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
             </template>
           </span>
           <span class="app-label">{{ icons[e.id]?.ready ? (e.shortName ?? e.name) : 'Installing…' }}</span>
@@ -152,10 +153,11 @@ onUnmounted(() => clearInterval(clock))
         </button>
         <!-- demo tile: replays a simulated 3s download on every click -->
         <button type="button" class="app" title="Replay the loading animation" @click="replayDemo">
-          <span class="app-icon" :class="{ 'app-icon--loading': !demo.ready }" :style="demo.ready ? { backgroundImage: 'url(/logo.png)' } : undefined">
+          <span class="app-icon" :style="demo.loaded ? { backgroundImage: 'url(/logo.png)' } : undefined">
+            <IconBlueprint v-if="!demo.loaded" />
             <template v-if="!demo.ready">
-              <IconBlueprint />
-              <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size }" />
+              <span class="veil" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
+              <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
             </template>
           </span>
           <span class="app-label">{{ demo.ready ? 'Demo' : 'Installing…' }}</span>
@@ -243,9 +245,15 @@ onUnmounted(() => clearInterval(clock))
   color: #fff;
 }
 /* loading state: dimmed blueprint + iOS-style pie, then the real icon fades in */
-/* dim only the blueprint underneath; the ring/pie stays pure white */
-.app-icon--loading :deep(.blueprint) {
-  filter: brightness(0.42) saturate(0.4);
+/* dark veil over the base (blueprint or the real icon) while installing; the ring/pie stays pure white */
+.veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  /* the circle is cut out of the veil (47% of the corner distance), then grows past the corners */
+  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 58%);
+  -webkit-mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
+  mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
 }
 /* dot -> ring -> pie: the element scales with --s, the thick white border is the ring, the conic fill the pie */
 .pie {
@@ -255,8 +263,9 @@ onUnmounted(() => clearInterval(clock))
   width: 66%;
   height: 66%;
   border-radius: 50%;
-  border: 0.85cqw solid #fff; /* ring ≈ 6% of the tile, like iOS */
-  background: conic-gradient(#fff calc(var(--p) * 360deg), transparent 0);
+  /* the ring is see-through: the icon shows undimmed through it, like through the loaded share */
+  border: 0.85cqw solid transparent;
+  background: conic-gradient(transparent calc(var(--p, 0) * 360deg), rgba(0, 0, 0, 0.58) 0);
   background-clip: padding-box;
   transform: scale(var(--s));
 }

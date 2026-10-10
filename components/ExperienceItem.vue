@@ -2,6 +2,7 @@
 import type { Experience } from '~/content/experiences'
 const props = defineProps<{ experience: Experience }>()
 const { open } = useLightbox()
+const icon = useSingleIconLoading(props.experience.icon)
 
 // Show the first row of thumbnails by default, the rest behind "See more"
 const PREVIEW = 3
@@ -28,7 +29,14 @@ onMounted(() => {
 <template>
   <article ref="root" class="reveal" :class="{ 'reveal--in': shown }">
     <div :id="experience.id" class="heading">
-      <img :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32" class="icon" loading="lazy">
+      <span class="icon">
+        <img v-if="icon.loaded" :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32">
+        <IconBlueprint v-else />
+        <template v-if="!icon.ready">
+          <span class="veil" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
+          <span class="pie" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
+        </template>
+      </span>
       <h2 class="name">{{ experience.name }}</h2>
     </div>
     <p class="period"><span class="role">{{ experience.role }}</span><span class="dot">·</span>{{ experience.period }}</p>
@@ -119,9 +127,40 @@ onMounted(() => {
   scroll-margin-top: 0;
 }
 .icon {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
   width: 32px;
   height: 32px;
   border-radius: 8px;
+  overflow: hidden;
+}
+.icon img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+.veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  /* the circle is cut out of the veil (47% of the corner distance), then grows past the corners */
+  --hole: calc(47% * var(--s, 0) + var(--v, 0) * 58%);
+  -webkit-mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
+  mask-image: radial-gradient(circle, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
+}
+.pie {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  /* the ring is see-through: the icon shows undimmed through it, like through the loaded share */
+  border: 2px solid transparent;
+  background: conic-gradient(transparent calc(var(--p, 0) * 360deg), rgba(0, 0, 0, 0.58) 0);
+  background-clip: padding-box;
+  transform: scale(var(--s));
 }
 .name {
   font-size: 28px;
