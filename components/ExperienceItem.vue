@@ -98,15 +98,18 @@ onMounted(() => {
   position: relative;
   padding-bottom: 8px;
 }
-/* hairline between experiences */
+/* wavy separator between experiences: a repeating 24px sine stroke, fading out to the right */
 .reveal + .reveal::before {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
-  top: 50px;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+  top: 46px;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='8' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C3 1 7 1 10 4S17 7 20 4' fill='none' stroke='white' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 20px 8px;
+  opacity: 0.16;
 }
 .heading {
   display: flex;

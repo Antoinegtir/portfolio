@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       link: [
+        { rel: 'icon', type: 'image/png', sizes: '64x64', href: '/favicon.png' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'preconnect', href: 'https://api.fontshare.com' },
         {
           rel: 'stylesheet',

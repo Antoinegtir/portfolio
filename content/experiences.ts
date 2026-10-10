@@ -66,14 +66,14 @@ export const experiences: Experience[] = [
     id: 'atclub',
     name: 'AtClub',
     role: 'Advisor to the CTO',
-    period: '6 months',
+    period: '2025.07 - Present',
     icon: '/icons/atclub.png',
     palette: ['#ff2d55', '#ff6a3d', '#ff8ab5'],
     users: '1.000.000+',
     usersSource: 'AppMagic',
     bullets: [
-      'Advised the CTO for 6 months on engineering and product for AtClub, a social app to find sports partners.',
-      'Advised on the Flutter and Firebase architecture of the app.',
+      'Advising the CTO on engineering and product for AtClub, a social app to find sports partners.',
+      'Advising on the Flutter and Firebase architecture of the app.',
     ],
     images: [
       '/screens/atclub-01.jpg',

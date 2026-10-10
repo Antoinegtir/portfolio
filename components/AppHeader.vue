@@ -10,7 +10,10 @@ function toTop() {
 <template>
   <header class="header">
     <nav class="pill">
-      <a href="/" class="logo" @click.prevent="toTop">antoine.</a>
+      <a href="/" class="logo" @click.prevent="toTop">
+        <img src="/avatar.png" alt="" width="28" height="28" class="logo-mark">
+        <span>antoine.</span>
+      </a>
       <a :href="profile.github" target="_blank" rel="noopener" class="nav-link">GitHub</a>
       <a :href="profile.linkedin" target="_blank" rel="noopener" class="nav-link">LinkedIn</a>
     </nav>
@@ -43,11 +46,21 @@ function toTop() {
   -webkit-backdrop-filter: saturate(1.4) blur(12px);
 }
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   margin-right: auto;
   font-size: 24px;
   font-weight: 700;
   line-height: 24px;
   color: #fafafa;
+}
+/* squircle: iOS-style continuous corner on the mark */
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  clip-path: path('M14 0C24.5 0 28 3.5 28 14S24.5 28 14 28 0 24.5 0 14 3.5 0 14 0Z');
 }
 .nav-link {
   font-size: 16px;

@@ -13,7 +13,47 @@ const ACTIVE_LINE = 0.7
 const activeId = ref(experiences[0].id)
 const palette = computed(() => experiences.find(e => e.id === activeId.value)?.palette ?? experiences[0].palette)
 
+// Blob positions orbit the screen as the page scrolls (one third of a turn apart), so the
+// wallpaper drifts with the reader instead of only cross-fading colours. The displayed angle
+// eases towards the scroll-driven target every frame, which keeps the motion continuous even
+// when the page jumps several sections at once.
+const targetProgress = ref(0)
+const shownProgress = ref(0)
+const blobPositions = computed(() =>
+  [0, 1, 2].map((i) => {
+    const a = shownProgress.value + (i * 2 * Math.PI) / 3
+    return { x: 41.5 + 40 * Math.cos(a), y: 90 + 78 * Math.sin(a) }
+  }),
+)
+let raf = 0
+const TAU = 2 * Math.PI
+function animate() {
+  // Shortest angular path: a big jump between sections never spins more than half a turn
+  const raw = targetProgress.value - shownProgress.value
+  const diff = ((raw + Math.PI) % TAU + TAU) % TAU - Math.PI
+  if (Math.abs(diff) > 0.0005) {
+    shownProgress.value += diff * 0.045
+    raf = requestAnimationFrame(animate)
+  } else {
+    shownProgress.value = targetProgress.value
+    raf = 0
+  }
+}
+function kick() {
+  if (!raf) raf = requestAnimationFrame(animate)
+}
+
+// While a click-triggered smooth scroll is running, the clicked app stays active so the
+// wallpaper makes a single colour transition instead of one per section passed over
+let pinnedUntil = 0
+function pin(ms: number) {
+  pinnedUntil = performance.now() + ms
+}
+
 function updateActive() {
+  targetProgress.value = window.scrollY / 2200
+  kick()
+  if (performance.now() < pinnedUntil) return
   const line = window.innerHeight * ACTIVE_LINE
   let current = experiences[0].id
   for (const e of experiences) {
@@ -26,14 +66,24 @@ function updateActive() {
   }
   activeId.value = current
 }
+function unpin() {
+  pinnedUntil = 0
+}
 onMounted(() => {
   updateActive()
+  shownProgress.value = targetProgress.value
   window.addEventListener('scroll', updateActive, { passive: true })
+  window.addEventListener('scrollend', unpin)
 })
-onUnmounted(() => window.removeEventListener('scroll', updateActive))
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateActive)
+  window.removeEventListener('scrollend', unpin)
+  if (raf) cancelAnimationFrame(raf)
+})
 
 function goTo(id: string) {
   activeId.value = id
+  pin(2500) // released earlier by scrollend where supported
   const el = document.getElementById(id)
   if (!el) return
   // Align the section title row (icon + name) with the phone's status bar line, like a hand-off between the two columns
@@ -70,9 +120,7 @@ onUnmounted(() => clearInterval(clock))
   <div class="phone" aria-hidden="true">
     <div class="screen">
       <div class="wallpaper" aria-hidden="true">
-        <i class="blob b1" :style="{ backgroundColor: palette[0] }" />
-        <i class="blob b2" :style="{ backgroundColor: palette[1] }" />
-        <i class="blob b3" :style="{ backgroundColor: palette[2] }" />
+        <i v-for="(pos, i) in blobPositions" :key="i" class="blob" :style="{ backgroundColor: palette[i], transform: `translate(${pos.x}cqw, ${pos.y}cqw)` }" />
       </div>
       <div class="island" />
       <div class="status">
@@ -151,15 +199,19 @@ onUnmounted(() => clearInterval(clock))
 }
 .blob {
   position: absolute;
+  left: -35cqw; /* translate() places the blob centre, see blobPositions */
+  top: -35cqw;
   display: block;
+  width: 70cqw;
+  height: 70cqw;
   border-radius: 50%;
   filter: blur(22cqw);
-  transition: background-color 900ms ease;
-  will-change: background-color;
+  opacity: 0.5;
+  transition: background-color 1400ms ease;
+  will-change: background-color, transform;
 }
-.b1 { left: -15cqw; top: -10cqw; width: 70cqw; height: 70cqw; opacity: 0.55; }
-.b2 { right: -25cqw; top: 45cqw; width: 80cqw; height: 80cqw; opacity: 0.45; }
-.b3 { left: -5cqw; bottom: -20cqw; width: 70cqw; height: 70cqw; opacity: 0.4; }
+.blob:nth-child(2) { width: 80cqw; height: 80cqw; left: -40cqw; top: -40cqw; opacity: 0.45; }
+.blob:nth-child(3) { opacity: 0.4; }
 .app--active .app-label {
   color: #fff;
 }
