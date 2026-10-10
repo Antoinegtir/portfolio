@@ -28,6 +28,7 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
         <span>{{ l.label }}</span>
       </a>
     </div>
+    <p class="stack-label">Stack</p>
     <img
       class="stack"
       :src="`https://skillicons.dev/icons?i=${stack.join(',')}&theme=dark&perline=7`"
@@ -96,9 +97,17 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
     transform: none;
   }
 }
+.stack-label {
+  margin-top: 32px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #555;
+}
 .stack {
   display: block;
-  margin-top: 24px;
+  margin-top: 10px;
   max-width: 100%;
   height: auto;
 }

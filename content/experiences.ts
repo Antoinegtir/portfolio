@@ -10,6 +10,10 @@ export type Experience = {
   name: string
   /** Shorter label for the phone home screen (iOS truncates long names) */
   shortName?: string
+  /** Audience size, normalised as '80.000+' / '3.000.000+'; rendered the same way for every app */
+  users?: string
+  /** Where the users figure comes from, when it is not first-party */
+  usersSource?: string
   role: string
   period: string
   icon: string
@@ -38,8 +42,9 @@ export const experiences: Experience[] = [
     role: 'Solo Founder',
     period: '2025.02 - Present',
     icon: '/icons/wellnotes.png',
+    users: '80.000+',
     bullets: [
-      'Student app with 80K+ users and 1,000+ ratings at 4.6 stars.',
+      'Student app with 1,000+ ratings at 4.6 stars.',
       'Ranked on average in the top 100 of the App Store in France.',
       '$30K ARR.',
     ],
@@ -52,17 +57,30 @@ export const experiences: Experience[] = [
       '/screens/wellnotes-07-folder.jpg',
     ],
     badges: [{ title: 'APP STORE FRANCE', subtitle: 'Top 100 on average', images: ['/screens/wellnotes-fr-top100.jpg'] }],
+    links: [{ label: 'App Store', href: 'https://apps.apple.com/fr/app/wellnotes-fiches-ia-mindmap/id6739225998' }],
   },
   {
-    id: 'dreamoji',
-    name: 'Dreamoji',
-    role: 'Founding Engineer',
-    period: '2024.09 - 2025.06',
-    icon: '/icons/dreamoji.png',
+    id: 'atclub',
+    name: 'AtClub',
+    role: 'Advisor to the CTO',
+    period: '6 months',
+    icon: '/icons/atclub.png',
+    users: '1.000.000+',
+    usersSource: 'AppMagic',
     bullets: [
-      'Shipped an app generating Genmoji-style AI emojis before iOS 18 launched.',
-      '300K+ users on iOS.',
+      'Advised the CTO for 6 months on engineering and product for AtClub, a social app to find sports partners.',
+      'Advised on the Flutter and Firebase architecture of the app.',
     ],
+    images: [
+      '/screens/atclub-01.jpg',
+      '/screens/atclub-02.jpg',
+      '/screens/atclub-03.jpg',
+      '/screens/atclub-04.jpg',
+      '/screens/atclub-05.jpg',
+      '/screens/atclub-06.jpg',
+    ],
+    badges: [{ title: 'APP STORE FRANCE', subtitle: 'Top 20 Social Networking (source: AppMagic)' }],
+    links: [{ label: 'App Store', href: 'https://apps.apple.com/us/app/atclub-sports-partners/id6450602291' }],
   },
   {
     id: 'vibes',
@@ -70,8 +88,9 @@ export const experiences: Experience[] = [
     role: 'Founding Engineer',
     period: '2023.08 - 2025.11',
     icon: '/icons/vibes.png',
+    users: '3.000.000+',
     bullets: [
-      'Founding member of a social network popular in Japan: 3,000,000+ users worldwide, top of the App Store charts in 30+ countries.',
+      'Founding member of a social network popular in Japan, top of the App Store charts in 30+ countries.',
       'Built and deployed the entire Android app.',
       'Built and maintain the iOS versions.',
     ],
@@ -95,6 +114,18 @@ export const experiences: Experience[] = [
         subtitle: 'Top charts in 30+ countries',
         images: ['/screens/vibes-se-4.jpg', '/screens/vibes-play-17.jpg'],
       },
+    ],
+  },
+  {
+    id: 'dreamoji',
+    name: 'Dreamoji',
+    role: 'Founding Engineer',
+    period: '2024.09 - 2025.01',
+    icon: '/icons/dreamoji.png',
+    users: '300.000+',
+    bullets: [
+      'Shipped an app generating Genmoji-style AI emojis before iOS 18 launched.',
+      'Built the entire Android app.',
     ],
   },
   {

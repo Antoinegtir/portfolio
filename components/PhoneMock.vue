@@ -8,12 +8,22 @@ const dock = [
 ] as const
 
 function goTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const el = document.getElementById(id)
+  if (!el) return
+  // Align the section title row (icon + name) with the phone's status bar line, like a hand-off between the two columns
+  const clock = document.querySelector('.phone .time')?.getBoundingClientRect()
+  const targetCenter = clock ? clock.top + clock.height / 2 : 110
+  const padding = parseFloat(getComputedStyle(el).paddingTop) || 0
+  const rowHeight = el.getBoundingClientRect().height - padding
+  // Layout position (offsetTop chain) rather than getBoundingClientRect: sections that are not
+  // revealed yet carry a translateY transform that would skew the measurement
+  let y = 0
+  for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) y += node.offsetTop
+  window.scrollTo({ top: y + padding + rowHeight / 2 - targetCenter, behavior: 'smooth' })
 }
 
-// Status bar: real clock (no AM/PM, like iOS) and real battery level when the browser exposes it
+// Status bar: real clock (no AM/PM, like iOS); the signal/wifi/battery glyphs are a static image
 const time = ref('9:41')
-const battery = ref(1)
 let clock: ReturnType<typeof setInterval> | undefined
 
 function tick() {
@@ -26,11 +36,6 @@ function tick() {
 onMounted(() => {
   tick()
   clock = setInterval(tick, 15_000)
-  const nav = navigator as Navigator & { getBattery?: () => Promise<{ level: number; addEventListener: (t: string, f: () => void) => void }> }
-  nav.getBattery?.().then((b) => {
-    battery.value = b.level
-    b.addEventListener('levelchange', () => (battery.value = b.level))
-  }).catch(() => {})
 })
 onUnmounted(() => clearInterval(clock))
 </script>
@@ -41,18 +46,7 @@ onUnmounted(() => clearInterval(clock))
       <div class="island" />
       <div class="status">
         <span class="time">{{ time }}</span>
-        <span class="status-icons">
-          <span class="signal"><i /><i /><i /><i /></span>
-          <svg class="wifi" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round">
-            <path d="M2.5 9.5a14 14 0 0 1 19 0" />
-            <path d="M6 13a9 9 0 0 1 12 0" />
-            <path d="M9.5 16.5a4.5 4.5 0 0 1 5 0" />
-            <circle cx="12" cy="19.5" r="1.1" fill="#fff" stroke="none" />
-          </svg>
-          <span class="battery" :class="{ low: battery < 0.2 }">
-            <i :style="{ width: Math.round(battery * 100) + '%' }" />
-          </span>
-        </span>
+        <img src="/statusbar.png" alt="" class="status-icons" width="161" height="31">
       </div>
 
       <div class="grid">
@@ -137,7 +131,8 @@ onUnmounted(() => clearInterval(clock))
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 9cqw 0 10cqw;
+  align-items: center;
+  padding: 0 7.5cqw 0 10.5cqw;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Inter, sans-serif;
   font-size: 3.6cqw;
   font-weight: 600;
@@ -145,60 +140,9 @@ onUnmounted(() => clearInterval(clock))
   color: #fff;
 }
 .status-icons {
-  display: flex;
-  align-items: center;
-  gap: 1.6cqw;
-}
-.wifi {
-  width: 4.2cqw;
-  height: 4.2cqw;
-}
-.signal {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5cqw;
-  height: 2.8cqw;
-}
-.signal i {
   display: block;
-  width: 0.9cqw;
-  background: #fff;
-  border-radius: 0.2cqw;
-}
-.signal i:nth-child(1) { height: 35%; }
-.signal i:nth-child(2) { height: 55%; }
-.signal i:nth-child(3) { height: 75%; }
-.signal i:nth-child(4) { height: 100%; }
-/* iOS battery glyph: rounded outline, small nub on the right, fill level inside */
-.battery {
-  position: relative;
-  width: 6.4cqw;
-  height: 3.1cqw;
-  border: 0.32cqw solid rgba(255, 255, 255, 0.45);
-  border-radius: 1cqw;
-  padding: 0.35cqw;
-  margin-right: 0.7cqw;
-}
-.battery::after {
-  content: '';
-  position: absolute;
-  right: -0.95cqw;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0.45cqw;
-  height: 1.1cqw;
-  border-radius: 0 0.3cqw 0.3cqw 0;
-  background: rgba(255, 255, 255, 0.45);
-}
-.battery i {
-  display: block;
-  height: 100%;
-  background: #fff;
-  border-radius: 0.45cqw;
-  transition: width 300ms ease;
-}
-.battery.low i {
-  background: #ff453a;
+  height: 3.4cqw;
+  width: auto;
 }
 .grid {
   position: absolute;

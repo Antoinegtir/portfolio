@@ -4,7 +4,7 @@ import { experiences, profile } from '../content/experiences'
 describe('content', () => {
   it('lists the experiences, newest first', () => {
     expect(experiences.map(e => e.name)).toEqual([
-      'Wellnotes', 'Dreamoji', 'Vibes Widget', 'Fhreads', 'ReBeal', 'Kams',
+      'Wellnotes', 'AtClub', 'Vibes Widget', 'Dreamoji', 'Fhreads', 'ReBeal', 'Kams',
     ])
   })
   it('every entry has id, role, period, icon and bullets', () => {

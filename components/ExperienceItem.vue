@@ -12,15 +12,32 @@ const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
 
 // Which trophy badge is unfolded to show its proof screenshots (one at a time)
 const openBadge = ref<number | null>(null)
+
+// Reveal the section once it scrolls into view
+const root = ref<HTMLElement | null>(null)
+const shown = ref(false)
+onMounted(() => {
+  if (!('IntersectionObserver' in window) || !root.value) { shown.value = true; return }
+  const io = new IntersectionObserver((entries) => {
+    if (entries.some(e => e.isIntersecting)) { shown.value = true; io.disconnect() }
+  }, { rootMargin: '0px 0px -10% 0px' })
+  io.observe(root.value)
+})
 </script>
 
 <template>
-  <article class="fade-in">
+  <article ref="root" class="reveal" :class="{ 'reveal--in': shown }">
     <div :id="experience.id" class="heading">
       <img :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32" class="icon" loading="lazy">
       <h2 class="name">{{ experience.name }}</h2>
     </div>
-    <p class="period">{{ experience.role }} {{ experience.period }}</p>
+    <p class="period"><span class="role">{{ experience.role }}</span><span class="dot">·</span>{{ experience.period }}</p>
+    <p v-if="experience.users" class="stat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="9" cy="8" r="3.5" /><path d="M2.5 19a6.5 6.5 0 0 1 13 0" /><circle cx="17" cy="9" r="2.5" /><path d="M15.5 14.5a5 5 0 0 1 6 4.5" />
+      </svg>
+      <span class="stat-value">{{ experience.users }}</span> users<span v-if="experience.usersSource" class="stat-source">source: {{ experience.usersSource }}</span>
+    </p>
     <ul class="bullets">
       <li v-for="b in experience.bullets" :key="b">{{ b }}</li>
     </ul>
@@ -35,7 +52,7 @@ const openBadge = ref<number | null>(null)
         :alt="`${experience.name} screenshot`"
         class="shot"
         loading="lazy"
-        @click="open(src, $event.currentTarget as HTMLElement, `${experience.name} screenshot`)"
+        @click="open(src, $event.currentTarget as HTMLElement, `${experience.name} screenshot`, images)"
       >
     </div>
     <button v-if="hiddenCount" type="button" class="see-more" @click="expanded = !expanded">
@@ -69,7 +86,7 @@ const openBadge = ref<number | null>(null)
           :alt="`${b.title} ${b.subtitle}`"
           class="shot"
           loading="lazy"
-          @click="open(src, $event.currentTarget as HTMLElement, `${b.title} ${b.subtitle}`)"
+          @click="open(src, $event.currentTarget as HTMLElement, `${b.title} ${b.subtitle}`, b.images)"
         >
       </div>
     </div>
@@ -77,11 +94,26 @@ const openBadge = ref<number | null>(null)
 </template>
 
 <style scoped>
+.reveal {
+  position: relative;
+  padding-bottom: 8px;
+}
+/* hairline between experiences */
+.reveal + .reveal::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+}
 .heading {
   display: flex;
   align-items: center;
   gap: 12px;
   padding-top: 100px;
+  scroll-margin-top: 0;
 }
 .icon {
   width: 32px;
@@ -95,10 +127,48 @@ const openBadge = ref<number | null>(null)
   color: #fff;
 }
 .period {
-  margin-top: 16px;
-  font-size: 17.6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 16px;
   font-weight: 500;
-  color: #595c7c;
+  color: #7c7fa6;
+  letter-spacing: 0.01em;
+}
+.period .role {
+  color: #a6a8c8;
+}
+.period .dot {
+  color: #4a4c66;
+}
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: #bbb;
+}
+.stat svg {
+  width: 15px;
+  height: 15px;
+  color: #8b8fb8;
+}
+.stat-value {
+  font-weight: 700;
+  color: #fff;
+}
+.stat-source {
+  margin-left: 6px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 11px;
+  color: #777;
 }
 .bullets {
   margin-top: 16px;
@@ -137,9 +207,11 @@ const openBadge = ref<number | null>(null)
 .shot {
   display: block;
   width: 100%;
-  border-radius: 8px;
-  border: 1px solid #111;
-  background: #333;
+  aspect-ratio: 9 / 19.5;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111;
   cursor: zoom-in;
   transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;
 }
@@ -254,14 +326,20 @@ button.badge-head:hover {
   font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
 }
-.fade-in {
-  animation: fade 0.6s ease both;
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 600ms ease, transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-@keyframes fade {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
+.reveal--in {
+  opacity: 1;
+  transform: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .fade-in { animation: none; }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 </style>
