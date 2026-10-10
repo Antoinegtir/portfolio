@@ -11,9 +11,11 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
 
 <template>
   <section id="top">
-    <h1 class="title">Hi, I'm {{ profile.name }}</h1>
+    <!-- resting place of the avatar + name; the AppHeader overlay draws them here and morphs them into the bar on scroll -->
+    <div id="identity-slot" class="identity-slot" aria-hidden="true" />
+    <h1 class="title">Hi, I'm {{ profile.name.split(' ')[0] }}</h1>
     <p class="bio">{{ profile.bio }}</p>
-    <div class="buttons">
+    <div id="hero-links" class="buttons">
       <a v-for="l in links" :key="l.label" :href="l.href" target="_blank" rel="noopener" class="btn">
         <svg v-if="l.icon === 'github'" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
@@ -41,6 +43,10 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
 <style scoped>
 #top {
   scroll-margin-top: 120px; /* keeps the hero clear of the header when the URL carries #top */
+}
+.identity-slot {
+  height: 64px;
+  margin-bottom: 28px;
 }
 .title {
   font-size: 32px;

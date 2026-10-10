@@ -22,7 +22,8 @@ const shownProgress = ref(0)
 const blobPositions = computed(() =>
   [0, 1, 2].map((i) => {
     const a = shownProgress.value + (i * 2 * Math.PI) / 3
-    return { x: 41.5 + 40 * Math.cos(a), y: 90 + 78 * Math.sin(a) }
+    // rounded so server and client render the same string (floating point differs across engines)
+    return { x: Math.round((41.5 + 40 * Math.cos(a)) * 100) / 100, y: Math.round((90 + 78 * Math.sin(a)) * 100) / 100 }
   }),
 )
 let raf = 0
