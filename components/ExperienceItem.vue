@@ -14,11 +14,15 @@ const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
 // Which trophy badge is unfolded to show its proof screenshots (one at a time)
 const openBadge = ref<number | null>(null)
 
-// Reveal the section once it scrolls into view
+// Reveal the section once it scrolls into view. Server-rendered as visible so the page is
+// complete before hydration (icon install animation, shimmering screenshots, text); only the
+// sections still below the fold when JS starts switch to the scroll reveal.
 const root = ref<HTMLElement | null>(null)
-const shown = ref(false)
+const shown = ref(true)
 onMounted(() => {
-  if (!('IntersectionObserver' in window) || !root.value) { shown.value = true; return }
+  if (!('IntersectionObserver' in window) || !root.value) return
+  if (root.value.getBoundingClientRect().top < window.innerHeight) return
+  shown.value = false
   const io = new IntersectionObserver((entries) => {
     if (entries.some(e => e.isIntersecting)) { shown.value = true; io.disconnect() }
   }, { rootMargin: '0px 0px -10% 0px' })
@@ -30,11 +34,12 @@ onMounted(() => {
   <article ref="root" class="reveal" :class="{ 'reveal--in': shown }">
     <div :id="experience.id" class="heading">
       <span class="icon">
-        <img v-if="icon.loaded" :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32">
-        <IconBlueprint v-else />
+        <IconBlueprint v-if="!icon.ready" />
+        <span v-if="!icon.loaded" class="icon-shimmer" />
+        <img v-if="icon.loaded" :src="experience.icon" :alt="`${experience.name} icon`" width="32" height="32" class="real">
         <template v-if="!icon.ready">
-          <span class="veil" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
-          <span class="pie" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
+          <span class="veil" :class="{ pre: icon.pre }" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
+          <span class="pie" :class="{ pre: icon.pre }" :style="{ '--p': icon.progress, '--s': icon.size, '--v': icon.reveal }" />
         </template>
       </span>
       <h2 class="name">{{ experience.name }}</h2>
@@ -58,7 +63,8 @@ onMounted(() => {
         :key="src"
         :src="src"
         :alt="`${experience.name} screenshot`"
-        class="shot"
+        v-shimmer
+        class="shot shimmer"
         loading="lazy"
         @click="open(src, $event.currentTarget as HTMLElement, `${experience.name} screenshot`, images)"
       >
@@ -92,7 +98,8 @@ onMounted(() => {
           :key="src"
           :src="src"
           :alt="`${b.title} ${b.subtitle}`"
-          class="shot"
+          v-shimmer
+          class="shot shimmer"
           loading="lazy"
           @click="open(src, $event.currentTarget as HTMLElement, `${b.title} ${b.subtitle}`, b.images)"
         >
@@ -112,7 +119,7 @@ onMounted(() => {
   position: absolute;
   left: 0;
   right: 0;
-  top: 46px;
+  top: 12px; /* close to the end of the previous app, more room below before the next heading */
   height: 8px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='8' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C3 1 7 1 10 4S17 7 20 4' fill='none' stroke='white' stroke-width='1.2'/%3E%3C/svg%3E");
   background-repeat: repeat-x;
@@ -123,7 +130,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-top: 100px;
+  padding-top: 65px; /* 12px wave offset + 8px wave + ~45px */
   scroll-margin-top: 0;
 }
 .icon {
@@ -139,6 +146,10 @@ onMounted(() => {
   display: block;
   width: 32px;
   height: 32px;
+}
+.icon .real {
+  position: absolute;
+  inset: 0;
 }
 .veil {
   position: absolute;
@@ -258,7 +269,7 @@ onMounted(() => {
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #111;
+  background-color: #111; /* not the shorthand: it would wipe the shimmer's background-image */
   cursor: zoom-in;
   transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;
 }

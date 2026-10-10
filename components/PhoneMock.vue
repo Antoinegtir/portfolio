@@ -10,8 +10,10 @@ const dock = [
 // Active app = the last section whose title row has crossed 70% of the viewport height, so the
 // wallpaper starts shifting as soon as the next app comes into view. Clicking an icon pins it right away.
 const ACTIVE_LINE = 0.7
-const activeId = ref(experiences[0].id)
-const palette = computed(() => experiences.find(e => e.id === activeId.value)?.palette ?? experiences[0].palette)
+// 'portfolio' = above the first section (the hero): neutral wallpaper, no app highlighted
+const activeId = ref('portfolio')
+const PORTFOLIO_PALETTE = ['#3b3b3b', '#5a5a5a', '#1c1c1c']
+const palette = computed(() => experiences.find(e => e.id === activeId.value)?.palette ?? PORTFOLIO_PALETTE)
 
 // Blob positions orbit the screen as the page scrolls (one third of a turn apart), so the
 // wallpaper drifts with the reader instead of only cross-fading colours. The displayed angle
@@ -56,7 +58,7 @@ function updateActive() {
   kick()
   if (performance.now() < pinnedUntil) return
   const line = window.innerHeight * ACTIVE_LINE
-  let current = experiences[0].id
+  let current = 'portfolio'
   for (const e of experiences) {
     const el = document.getElementById(e.id)
     if (!el) continue
@@ -83,6 +85,8 @@ onUnmounted(() => {
 })
 
 function toTop() {
+  activeId.value = 'portfolio'
+  pin(2500)
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -139,22 +143,19 @@ onUnmounted(() => clearInterval(clock))
         <button v-for="e in experiences" :key="e.id" type="button" class="app" :class="{ 'app--active': e.id === activeId }" @click="goTo(e.id)">
           <span class="app-icon" :style="icons[e.id]?.loaded ? { backgroundImage: `url(${e.icon})` } : undefined">
             <IconBlueprint v-if="!icons[e.id]?.loaded" />
+            <span v-if="!icons[e.id]?.loaded" class="icon-shimmer" />
             <template v-if="!icons[e.id]?.ready">
-              <span class="veil" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
-              <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+              <span class="veil" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+              <span class="pie" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
             </template>
           </span>
           <span class="app-label">{{ icons[e.id]?.ready ? (e.shortName ?? e.name) : 'Installing…' }}</span>
         </button>
-        <!-- the site itself, drawn as an icon-grid blueprint -->
-        <button type="button" class="app" @click="toTop">
-          <span class="app-icon"><IconBlueprint /></span>
-          <span class="app-label">Portfolio</span>
-        </button>
         <!-- demo tile: replays a simulated 3s download on every click -->
-        <button type="button" class="app" title="Replay the loading animation" @click="replayDemo">
+        <button v-if="SHOW_DEMO" type="button" class="app" title="Replay the loading animation" @click="replayDemo">
           <span class="app-icon" :style="demo.loaded ? { backgroundImage: 'url(/logo.png)' } : undefined">
             <IconBlueprint v-if="!demo.loaded" />
+            <span v-if="!demo.loaded" class="icon-shimmer" />
             <template v-if="!demo.ready">
               <span class="veil" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
               <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />

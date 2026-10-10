@@ -73,3 +73,45 @@ body {
   height: 78px;
   background: linear-gradient(rgba(0, 0, 0, 0) 5%, #000 100%);
 }
+
+/* App icon install choreography before hydration: registered custom properties so the CSS animation
+   can drive the same --p / --s the composable animates afterwards (dot 0-250ms, ring 250-700ms,
+   then the pie fills to 50% at 8s). useIconLoading picks it up at the same point when JS starts. */
+@property --p { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --s { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --v { syntax: '<number>'; inherits: false; initial-value: 0; }
+.pie.pre,
+.veil.pre {
+  animation: icon-install 8000ms linear both;
+}
+@keyframes icon-install {
+  0%     { --s: 0;    --p: 1; }
+  3.1%   { --s: 0.22; --p: 1; }
+  3.125% { --s: 0.22; --p: 0; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  8.75%  { --s: 1;    --p: 0; animation-timing-function: linear; }
+  100%   { --s: 1;    --p: 0.5; }
+}
+
+/* Images still loading show a sliding shimmer (v-shimmer directive) */
+.shimmer {
+  background-color: #141414;
+  background-image: linear-gradient(100deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.14) 50%, rgba(255, 255, 255, 0) 65%);
+  background-size: 250% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+/* same sweep over an app-icon placeholder while its image loads (sits between the blueprint and the veil) */
+.icon-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(100deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0) 65%);
+  background-size: 250% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  from { background-position: 125% 0; }
+  to   { background-position: -125% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shimmer, .icon-shimmer { animation: none; }
+}

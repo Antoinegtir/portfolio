@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { experiences } from '~/content/experiences'
+import { SHOW_DEMO } from '~/composables/useIconLoading'
 
 /*
  * Vertical app rail for layouts where the phone column does not fit (< 1024px): the app
@@ -9,9 +10,13 @@ import { experiences } from '~/content/experiences'
 const TOP_OFFSET = 96 // where a section title lands below the bar
 const ACTIVE_LINE = 0.7
 
-const activeId = ref(experiences[0].id)
+// 'portfolio' = above the first section (the hero): no app highlighted, indicator hidden
+const activeId = ref('portfolio')
 const { icons, demo, replayDemo } = useIconLoading()
-const activeIndex = computed(() => Math.max(0, experiences.findIndex(e => e.id === activeId.value)))
+const activeIndex = computed(() => {
+  const i = experiences.findIndex(e => e.id === activeId.value)
+  return Math.max(0, i)
+})
 
 // While a click-triggered smooth scroll runs, the clicked app stays active so the highlight
 // glides straight to it instead of stepping through every section on the way
@@ -23,7 +28,7 @@ function unpin() {
 function updateActive() {
   if (performance.now() < pinnedUntil) return
   const line = window.innerHeight * ACTIVE_LINE
-  let current = experiences[0].id
+  let current = 'portfolio'
   for (const e of experiences) {
     const el = document.getElementById(e.id)
     if (!el) continue
@@ -34,6 +39,8 @@ function updateActive() {
   activeId.value = current
 }
 function toTop() {
+  activeId.value = 'portfolio'
+  pinnedUntil = performance.now() + 2500
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 function goTo(id: string) {
@@ -59,7 +66,7 @@ onUnmounted(() => {
 
 <template>
   <nav class="rail" aria-label="Apps">
-    <span class="rail-indicator" :style="{ transform: `translateY(${activeIndex * 42}px)` }" aria-hidden="true" />
+    <span class="rail-indicator" :style="{ transform: `translateY(${activeIndex * 42}px)`, opacity: activeId === 'portfolio' ? 0 : 1 }" aria-hidden="true" />
     <button
       v-for="e in experiences"
       :key="e.id"
@@ -71,21 +78,20 @@ onUnmounted(() => {
       @click="goTo(e.id)"
     >
       <span class="rail-icon">
-        <img v-if="icons[e.id]?.loaded" :src="e.icon" alt="" width="36" height="36">
-        <IconBlueprint v-else />
+        <IconBlueprint v-if="!icons[e.id]?.ready" />
+        <span v-if="!icons[e.id]?.loaded" class="icon-shimmer" />
+        <img v-if="icons[e.id]?.loaded" :src="e.icon" alt="" width="36" height="36" class="real">
         <template v-if="!icons[e.id]?.ready">
-          <span class="veil" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
-          <span class="pie" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+          <span class="veil" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
+          <span class="pie" :class="{ pre: icons[e.id]?.pre }" :style="{ '--p': icons[e.id]?.progress ?? 0, '--s': icons[e.id]?.size ?? 0, '--v': icons[e.id]?.reveal ?? 0 }" />
         </template>
       </span>
     </button>
-    <button type="button" class="rail-app" title="Portfolio" aria-label="Portfolio" @click="toTop">
-      <span class="rail-icon"><IconBlueprint /></span>
-    </button>
-    <button type="button" class="rail-app" title="Demo: replay the loading animation" aria-label="Demo" @click="replayDemo">
+    <button v-if="SHOW_DEMO" type="button" class="rail-app" title="Demo: replay the loading animation" aria-label="Demo" @click="replayDemo">
       <span class="rail-icon">
         <img v-if="demo.loaded" src="/logo.png" alt="" width="36" height="36">
         <IconBlueprint v-else />
+        <span v-if="!demo.loaded" class="icon-shimmer" />
         <template v-if="!demo.ready">
           <span class="veil" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
           <span class="pie" :style="{ '--p': demo.progress, '--s': demo.size, '--v': demo.reveal }" />
@@ -148,6 +154,11 @@ onUnmounted(() => {
   width: 36px;
   height: 36px;
 }
+/* while installing, the real icon sits on top of the placeholder so the tile never goes blank */
+.rail-icon .real {
+  position: absolute;
+  inset: 0;
+}
 .veil {
   position: absolute;
   inset: 0;
@@ -186,7 +197,7 @@ onUnmounted(() => {
   height: 14px;
   border-radius: 2px;
   background: #fff;
-  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
 }
 @media (prefers-reduced-motion: reduce) {
   .rail-app,

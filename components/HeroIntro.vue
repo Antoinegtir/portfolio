@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { profile } from '~/content/experiences'
+// true once AppHeader has mounted and draws the avatar + name itself
+const identityMounted = useState('identity-mounted', () => false)
 const links = [
   { label: 'GitHub', href: profile.github, icon: 'github' },
   { label: 'LinkedIn', href: profile.linkedin, icon: 'linkedin' },
@@ -12,7 +14,14 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
 <template>
   <section id="top">
     <!-- resting place of the avatar + name; the AppHeader overlay draws them here and morphs them into the bar on scroll -->
-    <div id="identity-slot" class="identity-slot" aria-hidden="true" />
+    <div id="identity-slot" class="identity-slot" aria-hidden="true">
+      <!-- server-rendered stand-in shown until the header takes over: shimmering avatar + name -->
+      <div v-show="!identityMounted" class="identity-static">
+        <span class="identity-pill" />
+        <span class="identity-avatar shimmer" />
+        <span class="identity-name">{{ profile.name }}<small>{{ profile.tagline }} · Paris / Dublin</small></span>
+      </div>
+    </div>
     <h1 class="title">Hi, I'm {{ profile.name.split(' ')[0] }}</h1>
     <p class="bio">{{ profile.bio }}</p>
     <div id="hero-links" class="buttons">
@@ -31,12 +40,11 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
       </a>
     </div>
     <p class="stack-label">Stack</p>
-    <img
-      class="stack"
-      :src="`https://skillicons.dev/icons?i=${stack.join(',')}&theme=dark&perline=7`"
-      alt="Tech stack: Flutter, Dart, Firebase, Google Cloud, Swift, Kotlin, React Native, Vue.js, MongoDB, Redis, PostgreSQL, Node.js, JavaScript"
-      loading="lazy"
-    >
+    <ul class="stack" aria-label="Tech stack: Flutter, Dart, Firebase, Google Cloud, Swift, Kotlin, React Native, Vue.js, MongoDB, Redis, PostgreSQL, Node.js, JavaScript">
+      <li v-for="id in stack" :key="id">
+        <img v-shimmer :src="`https://skillicons.dev/icons?i=${id}&theme=dark`" :alt="id" class="stack-icon shimmer" width="48" height="48" loading="lazy">
+      </li>
+    </ul>
   </section>
 </template>
 
@@ -47,6 +55,120 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
 .identity-slot {
   height: 64px;
   margin-bottom: 28px;
+}
+.identity-static {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fafafa;
+}
+.identity-pill {
+  display: none;
+}
+.identity-avatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 22%;
+}
+.identity-name {
+  position: relative;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.identity-name small {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+}
+/* Before hydration, browsers with scroll-driven animations get the same hero -> top bar morph as
+   AppHeader (fixed elements, trajectory mapped onto the first --travel px of scroll). The
+   geometry mirrors AppHeader's constants: content column left, hero y 96px, bar y 27px. */
+@supports (animation-timeline: scroll()) {
+  .identity-static {
+    --hero-x: max(16px, calc((100vw - 480px) / 2));
+    --hero-y: 96px;
+    --pill-left: max(16px, calc((100vw - 740px) / 2));
+    --bar-x: calc(var(--pill-left) + 20px);
+    --bar-y: 27px;
+    --travel: 69px;
+    --name-scale: 0.75;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 0;
+    z-index: 40;
+    display: block;
+    pointer-events: none;
+  }
+  @media (max-width: 479px) {
+    .identity-static { --name-scale: 0.625; }
+  }
+  @media (min-width: 1024px) {
+    .identity-static { --hero-x: calc((100vw - 942px) / 2); }
+  }
+  .identity-pill {
+    display: block;
+    position: absolute;
+    top: 16px;
+    left: var(--pill-left);
+    width: min(740px, calc(100vw - 32px));
+    height: 50px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    animation: static-pill linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--travel);
+  }
+  .identity-avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    animation: static-avatar linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--travel);
+  }
+  .identity-name {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 50%;
+    animation: static-name linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--travel);
+  }
+  .identity-name small {
+    animation: static-subtitle linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--travel);
+  }
+}
+@keyframes static-avatar {
+  from { transform: translate(var(--hero-x), var(--hero-y)) scale(1); }
+  to   { transform: translate(var(--bar-x), var(--bar-y)) scale(0.4375); }
+}
+@keyframes static-name {
+  from { transform: translate(calc(var(--hero-x) + 78px), calc(var(--hero-y) + 32px)) translateY(-50%) scale(1); }
+  to   { transform: translate(calc(var(--bar-x) + 38px), calc(var(--bar-y) + 14px)) translateY(-50%) scale(var(--name-scale)); }
+}
+@keyframes static-subtitle {
+  from { opacity: 1; }
+  40%  { opacity: 0; }
+  to   { opacity: 0; }
+}
+@keyframes static-pill {
+  from { opacity: 0; transform: translateY(-8px); }
+  45%  { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .title {
   font-size: 32px;
@@ -112,9 +234,15 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
   color: #555;
 }
 .stack {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(7, 48px);
+  gap: 6px;
   margin-top: 10px;
-  max-width: 100%;
-  height: auto;
+}
+.stack-icon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
 }
 </style>
