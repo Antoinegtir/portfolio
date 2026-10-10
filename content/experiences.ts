@@ -150,7 +150,6 @@ export const experiences: Experience[] = [
       '/screens/threads-feed.jpg',
       '/screens/threads-threads.jpg',
       '/screens/threads-profile.jpg',
-      '/screens/threads-facebook.jpg',
       '/screens/threads-onboard.jpg',
       '/screens/threads-search.jpg',
       '/screens/threads-post.jpg',
@@ -158,6 +157,7 @@ export const experiences: Experience[] = [
       '/screens/threads-follow.jpg',
       '/screens/threads-settings.jpg',
     ],
+    badges: [{ title: 'THREADS', subtitle: 'Most viral open-source repo on the Threads app', images: ['/screens/threads-facebook.jpg'] }],
     links: [{ label: 'github.com/Antoinegtir/fhreads-meta', href: 'https://github.com/Antoinegtir/fhreads-meta' }],
   },
   {

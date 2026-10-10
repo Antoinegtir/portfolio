@@ -22,7 +22,7 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
         <span class="identity-name">{{ profile.name }}<small>{{ profile.tagline }} <span class="flag" role="img" aria-label="France">🇫🇷</span></small></span>
       </div>
     </div>
-    <h1 class="title">Hi, I'm {{ profile.name.split(' ')[0] }}</h1>
+    <h1 class="title">Hi, I'm {{ profile.name }}</h1>
     <p class="bio">{{ profile.bio }}</p>
     <div id="hero-links" class="buttons">
       <a v-for="l in links" :key="l.label" :href="l.href" target="_blank" rel="noopener" class="btn">
@@ -133,9 +133,10 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
     top: 0;
     left: 0;
     transform-origin: 0 0;
-    animation: static-avatar linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0 var(--travel);
+    /* scroll-driven morph + the time-driven shimmer (global keyframes), each on its own timeline */
+    animation: static-avatar linear both, shimmer 1.4s linear infinite;
+    animation-timeline: scroll(root block), auto;
+    animation-range: 0 var(--travel), normal;
   }
   .identity-name {
     position: absolute;

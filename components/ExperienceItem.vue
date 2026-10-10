@@ -6,15 +6,15 @@ const icon = useSingleIconLoading(props.experience.icon)
 
 // Show the first row of thumbnails by default, the rest behind "See more"
 const PREVIEW = 3
-const expanded = ref(false)
 const images = computed(() => props.experience.images ?? [])
-const visibleImages = computed(() => (expanded.value ? images.value : images.value.slice(0, PREVIEW)))
 const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
+const hiddenPreview = computed(() => images.value.slice(PREVIEW, PREVIEW + 3)) // stacked thumbs in the button
 
 // Badge titles like "APP STORE · GOOGLE PLAY" are shown as store logos + names
 const STORES = [
   { match: 'APP STORE', logo: '/stores/app-store.svg' },
   { match: 'GOOGLE PLAY', logo: '/stores/google-play.svg' },
+  { match: 'THREADS', logo: '/icons/threads.png' },
 ]
 function titleParts(title: string) {
   return title.split('·').map((t) => {
@@ -23,8 +23,15 @@ function titleParts(title: string) {
   })
 }
 
-// Which trophy badge is unfolded to show its proof screenshots (one at a time)
-const openBadge = ref<number | null>(null)
+// Trophy dropdowns are CSS-driven checkboxes (they work before hydration). Once mounted, opening
+// one closes the others in the same section; nothing ever writes the boxes on mount.
+function onBadgeToggle(e: Event) {
+  const box = e.target as HTMLInputElement
+  if (!box.checked) return
+  root.value?.querySelectorAll<HTMLInputElement>('.badge-toggle').forEach((other) => {
+    if (other !== box) other.checked = false
+  })
+}
 
 // Reveal the section once it scrolls into view. Server-rendered as visible so the page is
 // complete before hydration (icon install animation, shimmering screenshots, text); only the
@@ -69,31 +76,52 @@ onMounted(() => {
     <p v-if="experience.links?.length" class="links">
       <a v-for="l in experience.links" :key="l.href" :href="l.href" target="_blank" rel="noopener">{{ l.label }}</a>
     </p>
+    <!-- The hidden checkbox + label toggle the extra screenshots in pure CSS (they are all
+         server-rendered), so it works before hydration. No v-model on purpose: binding it would
+         reset the box to Vue's initial value on mount and undo a click made before hydration. -->
+    <input
+      v-if="hiddenCount"
+      :id="`more-${experience.id}`"
+      type="checkbox"
+      class="more-toggle"
+    >
     <div v-if="images.length" class="shots">
       <img
-        v-for="src in visibleImages"
+        v-for="(src, k) in images"
         :key="src"
         :src="src"
         :alt="`${experience.name} screenshot`"
         v-shimmer
         class="shot shimmer"
+        :class="{ 'shot--extra': k >= PREVIEW }"
         loading="lazy"
         @click="open(src, $event.currentTarget as HTMLElement, `${experience.name} screenshot`, images)"
       >
     </div>
-    <button v-if="hiddenCount" type="button" class="see-more" @click="expanded = !expanded">
-      <span>{{ expanded ? 'See less' : `See more (${hiddenCount})` }}</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" :class="{ up: expanded }">
+    <label v-if="hiddenCount" :for="`more-${experience.id}`" class="see-more">
+      <span class="when-closed">
+        <span class="see-more-thumbs" aria-hidden="true">
+          <img v-for="src in hiddenPreview" :key="src" :src="src" alt="" loading="lazy">
+        </span>
+        {{ hiddenCount }} more screenshot{{ hiddenCount > 1 ? 's' : '' }}
+      </span>
+      <span class="when-open">Show less</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 9l6 6 6-6" />
       </svg>
-    </button>
-    <div v-for="(b, i) in experience.badges ?? []" :key="b.title + b.subtitle" class="badge" :class="{ 'badge--open': openBadge === i }">
+    </label>
+    <div v-for="(b, i) in experience.badges ?? []" :key="b.title + b.subtitle" class="badge">
+      <input
+        v-if="b.images?.length"
+        :id="`badge-${experience.id}-${i}`"
+        type="checkbox"
+        class="badge-toggle"
+        @change="onBadgeToggle"
+      >
       <component
-        :is="b.images?.length ? 'button' : 'div'"
-        :type="b.images?.length ? 'button' : undefined"
+        :is="b.images?.length ? 'label' : 'div'"
+        :for="b.images?.length ? `badge-${experience.id}-${i}` : undefined"
         class="badge-head"
-        :aria-expanded="b.images?.length ? openBadge === i : undefined"
-        @click="b.images?.length && (openBadge = openBadge === i ? null : i)"
       >
         <img src="/trophy.png" alt="Trophy" width="32" height="32" class="badge-emoji">
         <div class="badge-text">
@@ -112,7 +140,7 @@ onMounted(() => {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </component>
-      <div v-if="b.images?.length && openBadge === i" class="shots badge-shots">
+      <div v-if="b.images?.length" class="shots badge-shots">
         <img
           v-for="src in b.images"
           :key="src"
@@ -307,33 +335,91 @@ onMounted(() => {
   }
 }
 .see-more {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #333;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content; /* as narrow as its content, centred under the grid */
+  min-height: 44px;
+  margin: 10px auto 0;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
-  color: #999;
+  color: #bbb;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: color 150ms ease, background 150ms ease;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 .see-more:hover {
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
 }
 .see-more svg {
   width: 16px;
   height: 16px;
+  opacity: 0.7;
   transition: transform 200ms ease;
 }
-.see-more svg.up {
+.more-toggle {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.shot--extra {
+  display: none;
+}
+.more-toggle:checked ~ .shots .shot--extra {
+  display: block;
+}
+.when-closed {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.when-open {
+  display: none;
+}
+.more-toggle:checked ~ .see-more .when-closed {
+  display: none;
+}
+.more-toggle:checked ~ .see-more .when-open {
+  display: inline;
+}
+.more-toggle:checked ~ .see-more svg {
   transform: rotate(180deg);
 }
+.more-toggle:focus-visible ~ .see-more {
+  outline: 2px solid #4f9cff;
+  outline-offset: 2px;
+}
+/* the hidden screenshots, stacked like a fanned deck */
+.see-more-thumbs {
+  display: flex;
+}
+.see-more-thumbs img {
+  width: 18px;
+  height: 30px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 4px;
+  border: 1.5px solid #0b0b0b;
+  background: #222;
+  transition: transform 200ms ease;
+}
+.see-more-thumbs img + img {
+  margin-left: -7px;
+}
+.see-more-thumbs img:nth-child(1) { transform: rotate(-8deg); }
+.see-more-thumbs img:nth-child(3) { transform: rotate(8deg); }
+.see-more:hover .see-more-thumbs img:nth-child(1) { transform: rotate(-12deg) translateX(-2px); }
+.see-more:hover .see-more-thumbs img:nth-child(3) { transform: rotate(12deg) translateX(2px); }
 .badge {
+  position: relative;
   margin-top: 16px;
   margin-bottom: 8px;
   border-radius: 8px;
@@ -343,7 +429,7 @@ onMounted(() => {
   transition: background 150ms ease, border-color 150ms ease;
 }
 /* hovering the head lights up the whole card evenly (no two-tone band when it is open) */
-.badge:has(button.badge-head:hover) {
+.badge:has(label.badge-head:hover) {
   border-color: rgba(120, 122, 160, 0.8);
   background: rgba(84, 86, 117, 0.5);
 }
@@ -362,7 +448,7 @@ onMounted(() => {
   font: inherit;
   text-align: left;
 }
-button.badge-head {
+label.badge-head {
   cursor: pointer;
 }
 .badge-chevron {
@@ -373,7 +459,24 @@ button.badge-head {
   color: rgba(255, 255, 255, 0.7);
   transition: transform 200ms ease;
 }
-.badge--open .badge-chevron {
+.badge-toggle {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.badge-shots {
+  display: none;
+}
+.badge-toggle:checked ~ .badge-shots {
+  display: grid;
+}
+.badge-toggle:focus-visible ~ .badge-head {
+  outline: 2px solid #4f9cff;
+  outline-offset: -2px;
+}
+.badge-toggle:checked ~ .badge-head .badge-chevron {
   transform: rotate(180deg);
 }
 .badge-shots {

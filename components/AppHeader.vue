@@ -241,6 +241,12 @@ onUnmounted(() => {
   animation-timeline: scroll(root block);
   animation-range: 0 var(--travel);
 }
+/* keep the loading shimmer running alongside the scroll-driven morph until the photo is in */
+.morph--css .avatar.shimmer {
+  animation: morph-avatar linear both, shimmer 1.4s linear infinite;
+  animation-timeline: scroll(root block), auto;
+  animation-range: 0 var(--travel), normal;
+}
 .morph--css .name {
   animation: morph-name linear both;
   animation-timeline: scroll(root block);

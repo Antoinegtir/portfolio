@@ -1,2 +1,14 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Allow: /
+
+# AI / answer-engine crawlers are welcome (GEO)
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://antoinegtir.github.io/portfolio/sitemap.xml
