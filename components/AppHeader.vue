@@ -47,7 +47,8 @@ const nameStyle = computed(() => {
   const s = lerp(HERO.avatar, BAR.avatar, t)
   const x = lerp(heroAvatar.value.x, barAvatar.value.x, t) + s + lerp(HERO.gap, BAR.gap, t)
   const y = lerp(heroAvatar.value.y, barAvatar.value.y, t) + s / 2
-  return { transform: `translate(${x}px, ${y}px) translateY(-50%)`, fontSize: `${lerp(HERO.name, BAR.name, t)}px` }
+  const barName = vw.value < 480 ? 15 : BAR.name // keep clear of the links on narrow screens
+  return { transform: `translate(${x}px, ${y}px) translateY(-50%)`, fontSize: `${lerp(HERO.name, barName, t)}px` }
 })
 const subtitleStyle = computed(() => ({ opacity: Math.max(0, 1 - p.value * 2.5) }))
 // The pill fades in behind the avatar and name during the second half of the morph
@@ -152,6 +153,11 @@ onUnmounted(() => {
 }
 .nav-link:hover {
   color: #fafafa;
+}
+@media (max-width: 479px) {
+  .pill { padding: 0 16px; }
+  .links { gap: 14px; }
+  .nav-link { font-size: 14px; }
 }
 .identity {
   position: absolute;

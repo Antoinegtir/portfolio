@@ -203,9 +203,14 @@ onMounted(() => {
 /* Portrait phone screenshots: a row of thumbnails rather than full-width images */
 .shots {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* always one row of three, whatever the width */
   gap: 8px;
   margin-top: 16px;
+}
+@media (max-width: 480px) {
+  .shots {
+    gap: 6px;
+  }
 }
 .shot {
   display: block;

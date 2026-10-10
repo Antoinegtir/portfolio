@@ -27,6 +27,12 @@ body {
   padding-top: 96px;
   padding-bottom: 120px;
 }
+/* leave room for the vertical app rail when the phone column is hidden */
+@media (max-width: 1023px) {
+  .content {
+    padding-right: 64px;
+  }
+}
 
 .phone-col {
   display: none;

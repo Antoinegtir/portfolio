@@ -25,6 +25,7 @@ useSeoMeta({
       </aside>
     </div>
     <div class="fade-bottom" />
+    <AppRail />
     <ImageLightbox />
     <ScrollTop />
   </div>
