@@ -34,23 +34,44 @@ body {
   }
 }
 
-.phone-col {
+.phone-spacer,
+.phone-fixed {
   display: none;
 }
 
 @media (min-width: 1024px) {
+  .phone-spacer {
+    display: block;
+    width: 430px;
+    flex-shrink: 0;
+  }
+  /* Same geometry as the shell (480 content + 32 gap + 430 phone, centred), but out of the
+     scrolling flow: the page can still bounce at its edges while the phone stays put. */
+  .phone-fixed {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
+    pointer-events: none;
+  }
+  .phone-row {
+    display: flex;
+    justify-content: flex-end;
+    width: 942px;
+    max-width: 100%;
+  }
   .phone-col {
     display: flex;
     align-items: center;
-    position: sticky;
-    top: 0;
     width: 430px;
     height: 100vh;
     box-sizing: border-box;
     padding-top: 84px; /* keep clear of the floating header pill */
     padding-bottom: 16px;
     flex-shrink: 0;
-    z-index: 20;
+    pointer-events: auto;
   }
 }
 

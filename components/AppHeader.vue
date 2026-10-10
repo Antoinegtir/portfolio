@@ -144,7 +144,7 @@ onUnmounted(() => {
       <img v-shimmer src="/avatar.png" alt="" class="avatar shimmer" :style="avatarStyle">
       <span class="name" :style="nameStyle">
         {{ profile.name }}
-        <small class="subtitle" :style="subtitleStyle">{{ profile.tagline }} · Paris / Dublin</small>
+        <small class="subtitle" :style="subtitleStyle">{{ profile.tagline }} <span class="flag" role="img" aria-label="France">🇫🇷</span></small>
       </span>
     </a>
   </div>

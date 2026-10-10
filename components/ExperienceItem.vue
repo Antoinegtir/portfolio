@@ -11,6 +11,18 @@ const images = computed(() => props.experience.images ?? [])
 const visibleImages = computed(() => (expanded.value ? images.value : images.value.slice(0, PREVIEW)))
 const hiddenCount = computed(() => Math.max(0, images.value.length - PREVIEW))
 
+// Badge titles like "APP STORE · GOOGLE PLAY" are shown as store logos + names
+const STORES = [
+  { match: 'APP STORE', logo: '/stores/app-store.svg' },
+  { match: 'GOOGLE PLAY', logo: '/stores/google-play.svg' },
+]
+function titleParts(title: string) {
+  return title.split('·').map((t) => {
+    const text = t.trim()
+    return { text, logo: STORES.find(s => text.includes(s.match))?.logo }
+  })
+}
+
 // Which trophy badge is unfolded to show its proof screenshots (one at a time)
 const openBadge = ref<number | null>(null)
 
@@ -85,7 +97,15 @@ onMounted(() => {
       >
         <img src="/trophy.png" alt="Trophy" width="32" height="32" class="badge-emoji">
         <div class="badge-text">
-          <span class="badge-title">{{ b.title }}</span>
+          <span class="badge-title">
+            <template v-for="(part, k) in titleParts(b.title)" :key="k">
+              <span v-if="k" class="badge-sep" aria-hidden="true">·</span>
+              <span class="badge-store">
+                <img v-if="part.logo" :src="part.logo" alt="" class="store-logo" width="14" height="14">
+                {{ part.text }}
+              </span>
+            </template>
+          </span>
           <span class="badge-subtitle">{{ b.subtitle }}</span>
         </div>
         <svg v-if="b.images?.length" class="badge-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -320,6 +340,12 @@ onMounted(() => {
   border: 1px solid rgba(84, 86, 117, 0.66);
   background: rgba(84, 86, 117, 0.4);
   overflow: hidden;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+/* hovering the head lights up the whole card evenly (no two-tone band when it is open) */
+.badge:has(button.badge-head:hover) {
+  border-color: rgba(120, 122, 160, 0.8);
+  background: rgba(84, 86, 117, 0.5);
 }
 .badge + .badge {
   margin-top: 0;
@@ -338,10 +364,6 @@ onMounted(() => {
 }
 button.badge-head {
   cursor: pointer;
-  transition: background 150ms ease;
-}
-button.badge-head:hover {
-  background: rgba(255, 255, 255, 0.05);
 }
 .badge-chevron {
   width: 18px;
@@ -358,6 +380,19 @@ button.badge-head:hover {
   margin-top: 0;
   padding: 0 10px 12px;
 }
+.badge-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.store-logo {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.badge-sep {
+  opacity: 0.6;
+}
 .badge-emoji {
   width: 32px;
   height: 32px;
@@ -371,6 +406,9 @@ button.badge-head:hover {
   margin-left: 8px;
 }
 .badge-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 10px;
   border-radius: 32px;
   background: #5a5c7c;

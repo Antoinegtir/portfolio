@@ -19,7 +19,7 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
       <div v-show="!identityMounted" class="identity-static">
         <span class="identity-pill" />
         <span class="identity-avatar shimmer" />
-        <span class="identity-name">{{ profile.name }}<small>{{ profile.tagline }} · Paris / Dublin</small></span>
+        <span class="identity-name">{{ profile.name }}<small>{{ profile.tagline }} <span class="flag" role="img" aria-label="France">🇫🇷</span></small></span>
       </div>
     </div>
     <h1 class="title">Hi, I'm {{ profile.name.split(' ')[0] }}</h1>

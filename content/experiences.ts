@@ -31,7 +31,7 @@ export type Experience = {
 export const profile = {
   name: 'Antoine Gonthier',
   tagline: 'Mobile Engineer',
-  bio: "Welcome to my site. I'm a 22-yo mobile engineer between Paris and Dublin, with 5+ years of experience building consumer apps. I work with SwiftUI & Java, Node.js and Firebase, and I care a lot about product design.",
+  bio: "Welcome to my site. I'm a 22-yo mobile engineer between Paris and Dublin, with 5+ years of experience building consumer apps. I build high-quality iOS and Android apps used by millions of people.",
   github: 'https://github.com/antoinegtir',
   linkedin: 'https://www.linkedin.com/in/antoinegtr',
   email: 'antoinegonthier11@icloud.com',
