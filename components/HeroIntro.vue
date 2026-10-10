@@ -7,7 +7,7 @@ const links = [
   { label: 'LinkedIn', href: profile.linkedin, icon: 'linkedin' },
   { label: 'Email', href: `mailto:${profile.email}`, icon: 'mail' },
 ] as const
-// skillicons.dev ids (react stands in for React Native, which has no dedicated icon)
+// icons from skillicons.dev, self-hosted in public/stack (react stands in for React Native)
 const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react', 'vue', 'mongodb', 'redis', 'postgres', 'nodejs', 'js']
 </script>
 
@@ -42,7 +42,7 @@ const stack = ['flutter', 'dart', 'firebase', 'gcp', 'swift', 'kotlin', 'react',
     <p class="stack-label">Stack</p>
     <ul class="stack" aria-label="Tech stack: Flutter, Dart, Firebase, Google Cloud, Swift, Kotlin, React Native, Vue.js, MongoDB, Redis, PostgreSQL, Node.js, JavaScript">
       <li v-for="id in stack" :key="id">
-        <img v-shimmer :src="`https://skillicons.dev/icons?i=${id}&theme=dark`" :alt="id" class="stack-icon shimmer" width="48" height="48" loading="lazy">
+        <img v-shimmer :src="`/stack/${id}.svg`" :alt="id" class="stack-icon shimmer" width="48" height="48" loading="lazy">
       </li>
     </ul>
   </section>

@@ -165,7 +165,7 @@ onUnmounted(() => {
 
     <!-- identity: shared between hero and bar -->
     <a href="/" class="identity" @click.prevent="toTop">
-      <img v-shimmer src="/avatar.webp" alt="" class="avatar shimmer" :style="avatarStyle">
+      <img v-shimmer src="/avatar.webp" alt="" class="avatar shimmer" fetchpriority="high" :style="avatarStyle">
       <span class="name" :style="nameStyle">
         {{ profile.name }}
         <small class="subtitle" :style="subtitleStyle">{{ profile.tagline }} <span class="flag" role="img" aria-label="France">🇫🇷</span></small>

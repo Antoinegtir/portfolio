@@ -12,7 +12,7 @@
 FTP_HOST ?= ftp.cluster129.hosting.ovh.net
 FTP_USER ?= antoifj
 FTP_DIR  ?= www
-SITE_URL ?= http://antoinegtr.com
+SITE_URL ?= https://antoinegtr.com
 DEV_PORT ?= 3000
 
 # Load .env if present (silently) and export its variables to the recipes

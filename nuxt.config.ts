@@ -25,11 +25,12 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'sitemap', type: 'application/xml', href: '/sitemap.xml' },
+        { rel: 'preload', as: 'image', href: '/avatar.webp' }, // first thing painted in the hero / top bar
         { rel: 'preconnect', href: 'https://api.fontshare.com' },
         { rel: 'preconnect', href: 'https://cdn.fontshare.com', crossorigin: '' },
         {
           rel: 'stylesheet',
-          href: 'https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap',
+          href: 'https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap',
         },
       ],
     },
