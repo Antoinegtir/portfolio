@@ -50,11 +50,11 @@ const morphVars = computed(() => ({
   '--name-scale': String(barName.value / HERO.name),
   '--pill-left': `${pillLeft.value}px`,
   '--pill-w': `${pillWidth.value}px`,
-  // Rubber-band at the top (iOS / macOS): scrollY goes negative and the page content slides down.
-  // The identity is fixed and its scroll-driven animation is clamped at 0, so push the whole
-  // overlay down by the same amount to keep it glued to the hero.
-  transform: scrollY.value < 0 ? `translateY(${-scrollY.value}px)` : '',
 }))
+// At the very top the overlay is positioned in the document instead of the viewport, so the
+// rubber-band bounce (which moves the page but never fixed elements) carries the identity along
+// with the hero text. Fixed and absolute coincide at scroll 0, so the switch is invisible.
+const atTop = computed(() => scrollY.value <= 0)
 // The inline transforms below are always written, also in CSS mode: the scroll-driven animation
 // overrides them while its timeline is active, and they take over the instant the browser drops
 // the timeline (background tab), so the identity never snaps back to the hero or to (0, 0).
@@ -158,7 +158,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-show="mounted" class="morph" :class="{ 'morph--bar': p > 0.9, 'morph--css': cssMode }" :style="morphVars">
+  <div v-show="mounted" class="morph" :class="{ 'morph--bar': p > 0.9, 'morph--css': cssMode, 'morph--top': atTop }" :style="morphVars">
     <!-- pill (translucent, blurred) and its links -->
     <div class="pill" :style="pillStyle">
       <span class="links" :style="linksStyle">
@@ -185,6 +185,9 @@ onUnmounted(() => {
   height: 0;
   z-index: 40;
   pointer-events: none;
+}
+.morph--top {
+  position: absolute; /* scrolls (and bounces) with the document while at the top */
 }
 .pill {
   position: absolute;
