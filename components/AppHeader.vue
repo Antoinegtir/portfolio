@@ -50,6 +50,10 @@ const morphVars = computed(() => ({
   '--name-scale': String(barName.value / HERO.name),
   '--pill-left': `${pillLeft.value}px`,
   '--pill-w': `${pillWidth.value}px`,
+  // Rubber-band at the top (iOS / macOS): scrollY goes negative and the page content slides down.
+  // The identity is fixed and its scroll-driven animation is clamped at 0, so push the whole
+  // overlay down by the same amount to keep it glued to the hero.
+  transform: scrollY.value < 0 ? `translateY(${-scrollY.value}px)` : '',
 }))
 // The inline transforms below are always written, also in CSS mode: the scroll-driven animation
 // overrides them while its timeline is active, and they take over the instant the browser drops
