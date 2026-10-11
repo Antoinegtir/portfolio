@@ -77,14 +77,23 @@ import { profile } from '~/content/experiences'
 }
 .row {
   display: flex;
+  flex-wrap: wrap; /* the links drop to their own line on narrow screens instead of breaking the name */
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 10px 16px;
   margin-top: 28px;
+}
+.copy {
+  white-space: nowrap;
 }
 .social {
   display: flex;
   gap: 16px;
+}
+@media (max-width: 380px) {
+  .social {
+    gap: 12px;
+  }
 }
 .social a:hover {
   color: #fff;
