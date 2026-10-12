@@ -65,7 +65,7 @@ export const experiences: Experience[] = [
   {
     id: 'atclub',
     name: 'AtClub',
-    role: 'Advisor to the CTO',
+    role: 'Advisor',
     period: '2025.07 - Present',
     icon: '/icons/atclub.webp',
     palette: ['#ff2d55', '#ff6a3d', '#ff8ab5'],
