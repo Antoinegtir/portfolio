@@ -75,7 +75,9 @@ function targetBox(natW: number, natH: number) {
   const bottom = isMobile() ? (hasNav.value ? 96 : 32) : (hasNav.value ? 72 : 40)
   const maxW = isMobile() ? vw - 32 : vw * 0.9
   const maxH = vh - top - bottom
-  const scale = Math.min(maxW / natW, maxH / natH, 1)
+  // desktop: leave breathing room around the screenshot instead of filling the whole height
+  const fitH = isMobile() ? maxH : maxH * 0.78
+  const scale = Math.min(maxW / natW, fitH / natH, 1)
   const w = natW * scale
   const h = natH * scale
   return { x: (vw - w) / 2, y: top + (maxH - h) / 2, w, h }
