@@ -315,16 +315,20 @@ onMounted(() => {
   width: 100%;
   aspect-ratio: 9 / 19.5;
   object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Locket-style card: bigger corners and a visible light frame around the screenshot, with a
+     soft inner edge so the image sits inside it */
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
   background-color: #111; /* not the shorthand: it would wipe the shimmer's background-image */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 6px 18px rgba(0, 0, 0, 0.35);
   cursor: zoom-in;
   transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;
 }
 .shot:hover {
   transform: translateY(-2px) scale(1.03);
   filter: brightness(1.12);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 @media (prefers-reduced-motion: reduce) {
   .shot {
