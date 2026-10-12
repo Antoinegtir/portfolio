@@ -28,7 +28,7 @@ const desktop = ref(true)
 // Glow frame ring: 6px on a thumbnail, ~5% of the displayed width once enlarged (see .glow-frame)
 const ring = computed(() => Math.max(6, Math.round(box.value.w * 0.05)))
 const SIDE_SCALE = 0.78
-const SIDE_GAP = 40
+const SIDE_GAP = 80
 const carousel = computed(() => desktop.value && hasNav.value && count.value > 2)
 const slots = computed(() => {
   if (!carousel.value) return []

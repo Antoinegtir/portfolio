@@ -169,6 +169,8 @@ body {
 .glow-frame > img {
   display: block;
   width: 100%;
-  border-radius: calc(var(--ring) * 2.4);
+  /* Outer radius is 3.6 rings. A constant-width ring needs inner = outer - ring (2.6); 3.0 makes the
+     diagonal slightly thicker (~1.15 ring), which reads as an even frame in the corners. */
+  border-radius: calc(var(--ring) * 3);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
 }

@@ -318,8 +318,9 @@ onMounted(() => {
 .shot-frame {
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
+/* hover lifts the card without scaling it: a scale would resample the rounded corners */
 .shot-frame:hover {
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-3px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
 }
 .shot {
