@@ -267,8 +267,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 .slot {
   position: absolute;
   object-fit: cover;
-  border-radius: 12px;
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  border: 3px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   transform-origin: center;
   /* Flutter's Curves.fastOutSlowIn */
@@ -317,7 +317,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   position: absolute;
   object-fit: cover;
   border-radius: 8px;
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border: 3px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   transition:
     left 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -329,7 +329,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   will-change: left, top, width, height;
 }
 .lightbox--open .lightbox-img {
-  border-radius: 14px;
+  border-radius: 16px;
 }
 .lightbox-img--fading {
   opacity: 0;
