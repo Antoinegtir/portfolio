@@ -155,12 +155,12 @@ body {
   border-radius: calc(var(--ring) * 3.6);
   overflow: hidden;
   isolation: isolate;
-  background: #0d0d0d;
+  background: transparent;
 }
 .glow-frame::before {
   content: '';
   position: absolute;
-  inset: calc(var(--ring) * -4); /* bleed past the clip so the blur has no transparent edge */
+  inset: calc(var(--ring) * -8); /* bleed well past the clip so the blur never fades to dark at the edge */
   z-index: -1;
   background: var(--glow) center / cover no-repeat;
   filter: blur(calc(var(--ring) * 2.3)) saturate(1.8) brightness(0.85);
@@ -172,5 +172,4 @@ body {
   /* Outer radius is 3.6 rings. A constant-width ring needs inner = outer - ring (2.6); 3.0 makes the
      diagonal slightly thicker (~1.15 ring), which reads as an even frame in the corners. */
   border-radius: calc(var(--ring) * 3);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
 }
