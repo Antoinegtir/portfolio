@@ -25,6 +25,7 @@ const isMobile = () => window.innerWidth <= MOBILE
 // Stepping only changes the offsets, so the next item slides to the centre while growing and the
 // current one slides out while shrinking, all with one fast-out-slow-in curve.
 const desktop = ref(true)
+const RING = 6 // width of the glow frame around the image (see .glow-frame)
 const SIDE_SCALE = 0.78
 const SIDE_GAP = 40
 const carousel = computed(() => desktop.value && hasNav.value && count.value > 2)
@@ -48,10 +49,10 @@ function slotStyle(off: number) {
   const shift = off === 0 ? 0 : Math.sign(off) * (b.w / 2 + SIDE_GAP + (b.w * SIDE_SCALE) / 2)
   const far = Math.abs(off) > 1
   return {
-    left: `${b.x}px`,
-    top: `${b.y}px`,
-    width: `${b.w}px`,
-    height: `${b.h}px`,
+    left: `${b.x - RING}px`,
+    top: `${b.y - RING}px`,
+    width: `${b.w + RING * 2}px`,
+    height: `${b.h + RING * 2}px`,
     transform: `translateX(${far ? shift * 2 : shift}px) scale(${off === 0 ? 1 : SIDE_SCALE})`,
     opacity: off === 0 ? 1 : far ? 0 : 0.35,
     filter: off === 0 ? 'none' : 'saturate(0.7)',
@@ -203,25 +204,24 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
       @touchend="onTouchEnd"
     >
       <div v-if="carousel && expanded" class="track">
-        <img
+        <div
           v-for="sl in slots"
           :key="sl.src"
-          :src="sl.src"
-          :alt="sl.off === 0 ? current?.alt : ''"
-          class="slot"
+          class="slot glow-frame"
           :class="{ 'slot--side': sl.off !== 0 }"
-          :style="slotStyle(sl.off)"
+          :style="{ ...slotStyle(sl.off), '--glow': `url(${sl.src})` }"
           @click.stop="onSlot(sl.off)"
         >
+          <img :src="sl.src" :alt="sl.off === 0 ? current?.alt : ''" class="slot-img">
+        </div>
       </div>
-      <img
-        ref="img"
-        :src="current?.src"
-        :alt="current?.alt"
-        class="lightbox-img"
+      <div
+        class="lightbox-img glow-frame"
         :class="{ 'lightbox-img--swapping': swapping, 'lightbox-img--hidden': carousel && expanded, 'lightbox-img--fading': fading }"
-        :style="{ left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px' }"
+        :style="{ left: box.x - RING + 'px', top: box.y - RING + 'px', width: box.w + RING * 2 + 'px', height: box.h + RING * 2 + 'px', '--glow': `url(${current?.src})` }"
       >
+        <img ref="img" :src="current?.src" :alt="current?.alt" class="lightbox-photo">
+      </div>
       <button v-if="expanded" type="button" class="close" aria-label="Close" @click.stop="close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
       </button>
@@ -266,8 +266,6 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 }
 .slot {
   position: absolute;
-  object-fit: cover;
-  border-radius: 16px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   transform-origin: center;
   /* Flutter's Curves.fastOutSlowIn */
@@ -276,6 +274,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
     opacity 520ms cubic-bezier(0.4, 0, 0.2, 1),
     filter 520ms ease;
   will-change: transform, opacity;
+}
+.slot-img,
+.lightbox-photo {
+  height: 100%;
+  object-fit: cover;
 }
 .slot--side {
   cursor: pointer;
@@ -314,20 +317,14 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 }
 .lightbox-img {
   position: absolute;
-  object-fit: cover;
-  border-radius: 8px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   transition:
     left 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
     top 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
     width 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
     height 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-radius 320ms ease,
     opacity 120ms ease;
   will-change: left, top, width, height;
-}
-.lightbox--open .lightbox-img {
-  border-radius: 16px;
 }
 .lightbox-img--fading {
   opacity: 0;

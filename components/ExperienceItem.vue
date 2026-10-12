@@ -89,7 +89,7 @@ onMounted(() => {
       <span
         v-for="(src, k) in images"
         :key="src"
-        class="shot-frame"
+        class="shot-frame glow-frame"
         :class="{ 'shot-frame--extra': k >= PREVIEW }"
         :style="{ '--glow': `url(${src})` }"
       >
@@ -146,7 +146,7 @@ onMounted(() => {
         </svg>
       </component>
       <div v-if="b.images?.length" class="shots badge-shots">
-        <span v-for="src in b.images" :key="src" class="shot-frame" :style="{ '--glow': `url(${src})` }">
+        <span v-for="src in b.images" :key="src" class="shot-frame glow-frame" :style="{ '--glow': `url(${src})` }">
           <img
             :src="src"
             :alt="`${b.title} ${b.subtitle}`"
@@ -315,17 +315,6 @@ onMounted(() => {
     gap: 6px;
   }
 }
-/* Locket-style frame: a 6px ring that is a blurred, saturated copy of the screenshot itself, so
-   every card glows with its own colours instead of a flat white edge */
-.shot-frame {
-  position: relative;
-  display: block;
-  padding: 6px;
-  border-radius: 22px;
-  overflow: hidden;
-  isolation: isolate;
-  background: #0d0d0d;
-}
 .shot-frame {
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
@@ -333,21 +322,11 @@ onMounted(() => {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
 }
-.shot-frame::before {
-  content: '';
-  position: absolute;
-  inset: -24px; /* bleed past the clip so the blur has no transparent edge */
-  z-index: -1;
-  background: var(--glow) center / cover no-repeat;
-  filter: blur(14px) saturate(1.6) brightness(1.05);
-  transform: scale(1.1);
-}
 .shot {
   display: block;
   width: 100%;
   aspect-ratio: 9 / 19.5;
   object-fit: cover;
-  border-radius: 16px;
   background-color: #111; /* not the shorthand: it would wipe the shimmer's background-image */
   cursor: zoom-in;
   transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;

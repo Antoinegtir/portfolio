@@ -142,3 +142,30 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .shimmer, .icon-shimmer { animation: none; }
 }
+
+/* Glow frame (screenshots, lightbox): a 6px ring that is a blurred, saturated copy of the image
+   itself, set through --glow: url(...). The inner radius is 2px tighter than concentric on purpose,
+   so the ring never looks thinner in the corners than on the sides. */
+.glow-frame {
+  position: relative;
+  display: block;
+  padding: 6px;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0d0d0d;
+}
+.glow-frame::before {
+  content: '';
+  position: absolute;
+  inset: -24px; /* bleed past the clip so the blur has no transparent edge */
+  z-index: -1;
+  background: var(--glow) center / cover no-repeat;
+  filter: blur(14px) saturate(1.6) brightness(1.05);
+  transform: scale(1.1);
+}
+.glow-frame > img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+}
