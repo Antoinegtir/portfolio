@@ -268,7 +268,6 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   position: absolute;
   object-fit: cover;
   border-radius: 16px;
-  border: 3px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   transform-origin: center;
   /* Flutter's Curves.fastOutSlowIn */
@@ -317,7 +316,6 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   position: absolute;
   object-fit: cover;
   border-radius: 8px;
-  border: 3px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   transition:
     left 320ms cubic-bezier(0.2, 0.8, 0.2, 1),

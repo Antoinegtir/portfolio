@@ -86,17 +86,22 @@ onMounted(() => {
       class="more-toggle"
     >
     <div v-if="images.length" class="shots">
-      <img
+      <span
         v-for="(src, k) in images"
         :key="src"
-        :src="src"
-        :alt="`${experience.name} screenshot`"
-        v-shimmer
-        class="shot shimmer"
-        :class="{ 'shot--extra': k >= PREVIEW }"
-        loading="lazy"
-        @click="open(src, $event.currentTarget as HTMLElement, `${experience.name} screenshot`, images)"
+        class="shot-frame"
+        :class="{ 'shot-frame--extra': k >= PREVIEW }"
+        :style="{ '--glow': `url(${src})` }"
       >
+        <img
+          :src="src"
+          :alt="`${experience.name} screenshot`"
+          v-shimmer
+          class="shot shimmer"
+          loading="lazy"
+          @click="open(src, $event.currentTarget as HTMLElement, `${experience.name} screenshot`, images)"
+        >
+      </span>
     </div>
     <label v-if="hiddenCount" :for="`more-${experience.id}`" class="see-more">
       <span class="when-closed">
@@ -141,16 +146,16 @@ onMounted(() => {
         </svg>
       </component>
       <div v-if="b.images?.length" class="shots badge-shots">
-        <img
-          v-for="src in b.images"
-          :key="src"
-          :src="src"
-          :alt="`${b.title} ${b.subtitle}`"
-          v-shimmer
-          class="shot shimmer"
-          loading="lazy"
-          @click="open(src, $event.currentTarget as HTMLElement, `${b.title} ${b.subtitle}`, b.images)"
-        >
+        <span v-for="src in b.images" :key="src" class="shot-frame" :style="{ '--glow': `url(${src})` }">
+          <img
+            :src="src"
+            :alt="`${b.title} ${b.subtitle}`"
+            v-shimmer
+            class="shot shimmer"
+            loading="lazy"
+            @click="open(src, $event.currentTarget as HTMLElement, `${b.title} ${b.subtitle}`, b.images)"
+          >
+        </span>
       </div>
     </div>
   </article>
@@ -310,31 +315,51 @@ onMounted(() => {
     gap: 6px;
   }
 }
+/* Locket-style frame: a 6px ring that is a blurred, saturated copy of the screenshot itself, so
+   every card glows with its own colours instead of a flat white edge */
+.shot-frame {
+  position: relative;
+  display: block;
+  padding: 6px;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0d0d0d;
+}
+.shot-frame {
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.shot-frame:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+.shot-frame::before {
+  content: '';
+  position: absolute;
+  inset: -24px; /* bleed past the clip so the blur has no transparent edge */
+  z-index: -1;
+  background: var(--glow) center / cover no-repeat;
+  filter: blur(14px) saturate(1.6) brightness(1.05);
+  transform: scale(1.1);
+}
 .shot {
   display: block;
   width: 100%;
   aspect-ratio: 9 / 19.5;
   object-fit: cover;
-  /* Locket-style card: bigger corners and a visible light frame around the screenshot, with a
-     soft inner edge so the image sits inside it */
   border-radius: 16px;
-  border: 3px solid rgba(255, 255, 255, 0.5);
   background-color: #111; /* not the shorthand: it would wipe the shimmer's background-image */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 255, 255, 0.07), 0 8px 22px rgba(0, 0, 0, 0.4);
   cursor: zoom-in;
   transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;
 }
 .shot:hover {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.12);
-  border-color: rgba(255, 255, 255, 0.75);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 0 18px rgba(255, 255, 255, 0.12), 0 10px 30px rgba(0, 0, 0, 0.5);
+  filter: brightness(1.1);
 }
 @media (prefers-reduced-motion: reduce) {
   .shot {
     transition: none;
   }
-  .shot:hover {
+  .shot-frame:hover {
     transform: none;
   }
 }
@@ -374,10 +399,10 @@ onMounted(() => {
   height: 1px;
   pointer-events: none;
 }
-.shot--extra {
+.shot-frame--extra {
   display: none;
 }
-.more-toggle:checked ~ .shots .shot--extra {
+.more-toggle:checked ~ .shots .shot-frame--extra {
   display: block;
 }
 .when-closed {
