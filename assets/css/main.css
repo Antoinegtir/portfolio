@@ -155,7 +155,18 @@ body {
   border-radius: calc(var(--ring) * 3.6);
   overflow: hidden;
   isolation: isolate;
-  background: transparent;
+  /* iOS Safari does not always clip a blurred, composited child to a rounded overflow box and
+     leaves dark slivers at the edges; an explicit rounded clip-path (and the old mask trick) fixes it */
+  clip-path: inset(0 round calc(var(--ring) * 3.6));
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  /* neutral fallback while the glow image is still loading, instead of the black page */
+  background: rgba(255, 255, 255, 0.1);
+}
+/* small cards on phones: a thinner ring */
+@media (max-width: 640px) {
+  .shots .glow-frame {
+    --ring: 4px;
+  }
 }
 .glow-frame::before {
   content: '';
@@ -164,7 +175,7 @@ body {
   z-index: -1;
   background: var(--glow) center / cover no-repeat;
   filter: blur(calc(var(--ring) * 2.3)) saturate(1.8) brightness(0.85);
-  transform: scale(1.1);
+  transform: scale(1.1) translateZ(0);
 }
 .glow-frame > img {
   display: block;

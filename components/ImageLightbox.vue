@@ -26,7 +26,8 @@ const isMobile = () => window.innerWidth <= MOBILE
 // current one slides out while shrinking, all with one fast-out-slow-in curve.
 const desktop = ref(true)
 // Glow frame ring: 6px on a thumbnail, ~5% of the displayed width once enlarged (see .glow-frame)
-const ring = computed(() => Math.max(6, Math.round(box.value.w * 0.05)))
+// a full-width image on a phone needs a lighter ring than the centred image on desktop
+const ring = computed(() => Math.max(4, Math.round(box.value.w * (desktop.value ? 0.05 : 0.03))))
 const SIDE_SCALE = 0.78
 const SIDE_GAP = 80
 const carousel = computed(() => desktop.value && hasNav.value && count.value > 2)
