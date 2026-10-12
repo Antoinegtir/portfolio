@@ -25,7 +25,8 @@ const isMobile = () => window.innerWidth <= MOBILE
 // Stepping only changes the offsets, so the next item slides to the centre while growing and the
 // current one slides out while shrinking, all with one fast-out-slow-in curve.
 const desktop = ref(true)
-const RING = 6 // width of the glow frame around the image (see .glow-frame)
+// Glow frame ring: 6px on a thumbnail, ~5% of the displayed width once enlarged (see .glow-frame)
+const ring = computed(() => Math.max(6, Math.round(box.value.w * 0.05)))
 const SIDE_SCALE = 0.78
 const SIDE_GAP = 40
 const carousel = computed(() => desktop.value && hasNav.value && count.value > 2)
@@ -49,10 +50,11 @@ function slotStyle(off: number) {
   const shift = off === 0 ? 0 : Math.sign(off) * (b.w / 2 + SIDE_GAP + (b.w * SIDE_SCALE) / 2)
   const far = Math.abs(off) > 1
   return {
-    left: `${b.x - RING}px`,
-    top: `${b.y - RING}px`,
-    width: `${b.w + RING * 2}px`,
-    height: `${b.h + RING * 2}px`,
+    left: `${b.x - ring.value}px`,
+    top: `${b.y - ring.value}px`,
+    width: `${b.w + ring.value * 2}px`,
+    height: `${b.h + ring.value * 2}px`,
+    '--ring': `${ring.value}px`,
     transform: `translateX(${far ? shift * 2 : shift}px) scale(${off === 0 ? 1 : SIDE_SCALE})`,
     opacity: off === 0 ? 1 : far ? 0 : 0.35,
     filter: off === 0 ? 'none' : 'saturate(0.7)',
@@ -218,7 +220,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
       <div
         class="lightbox-img glow-frame"
         :class="{ 'lightbox-img--swapping': swapping, 'lightbox-img--hidden': carousel && expanded, 'lightbox-img--fading': fading }"
-        :style="{ left: box.x - RING + 'px', top: box.y - RING + 'px', width: box.w + RING * 2 + 'px', height: box.h + RING * 2 + 'px', '--glow': `url(${current?.src})` }"
+        :style="{ left: box.x - ring + 'px', top: box.y - ring + 'px', width: box.w + ring * 2 + 'px', height: box.h + ring * 2 + 'px', '--ring': ring + 'px', '--glow': `url(${current?.src})` }"
       >
         <img ref="img" :src="current?.src" :alt="current?.alt" class="lightbox-photo">
       </div>
@@ -272,7 +274,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   transition:
     transform 520ms cubic-bezier(0.4, 0, 0.2, 1),
     opacity 520ms cubic-bezier(0.4, 0, 0.2, 1),
-    filter 520ms ease;
+    filter 520ms ease,
+    padding 320ms ease,
+    border-radius 320ms ease;
   will-change: transform, opacity;
 }
 .slot-img,
@@ -323,6 +327,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
     top 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
     width 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
     height 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    padding 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-radius 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 120ms ease;
   will-change: left, top, width, height;
 }

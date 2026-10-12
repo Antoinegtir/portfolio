@@ -143,14 +143,16 @@ body {
   .shimmer, .icon-shimmer { animation: none; }
 }
 
-/* Glow frame (screenshots, lightbox): a 6px ring that is a blurred, saturated copy of the image
-   itself, set through --glow: url(...). The inner radius is 2px tighter than concentric on purpose,
-   so the ring never looks thinner in the corners than on the sides. */
+/* Glow frame (screenshots, lightbox): a ring that is a blurred, saturated copy of the image itself,
+   set through --glow: url(...). Everything derives from --ring (6px on thumbnails, ~5% of the width in
+   the lightbox), so the frame scales with the image. A dark hairline separates the photo from the ring,
+   so the ring keeps a constant visible width even where its colour matches the photo's corners. */
 .glow-frame {
+  --ring: 6px;
   position: relative;
   display: block;
-  padding: 6px;
-  border-radius: 22px;
+  padding: var(--ring);
+  border-radius: calc(var(--ring) * 3.6);
   overflow: hidden;
   isolation: isolate;
   background: #0d0d0d;
@@ -158,14 +160,15 @@ body {
 .glow-frame::before {
   content: '';
   position: absolute;
-  inset: -24px; /* bleed past the clip so the blur has no transparent edge */
+  inset: calc(var(--ring) * -4); /* bleed past the clip so the blur has no transparent edge */
   z-index: -1;
   background: var(--glow) center / cover no-repeat;
-  filter: blur(14px) saturate(1.6) brightness(1.05);
+  filter: blur(calc(var(--ring) * 2.3)) saturate(1.8) brightness(0.85);
   transform: scale(1.1);
 }
 .glow-frame > img {
   display: block;
   width: 100%;
-  border-radius: 14px;
+  border-radius: calc(var(--ring) * 2.4);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
 }
